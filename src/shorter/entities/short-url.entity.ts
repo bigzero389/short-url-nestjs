@@ -8,12 +8,14 @@ export class ShortUrl {
   apiKey: string;
 
   @Column()
-  targetUrl: string;
-
-  @Column()
-  end_date: string;
+  originUrl: string;
 
   @Column()
   shortUrl: string;
-  // genres: string[];
+
+  @Column()
+  endDateTime: string;
+
+  @Column()
+  beginDateTime: string;
 }

@@ -1,18 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsOptional, IsDateString } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsDateString, minLength, maxLength, Length } from 'class-validator';
 
 export class ReqUrlDto {
 
-  @ApiProperty({ description: 'target_url' })
+  @ApiProperty({ description: 'origin_url' })
   @IsString()
-  readonly target_url: string;
+  originUrl: string;
 
-  @IsOptional()
-  // @IsDateString()
-  readonly end_date_ISO8601: string;
-
-  @IsNumber()
-  @IsOptional()
-  readonly period_second: number;
+  @IsString() @Length(14,14)
+  endDateTime: string;
 }

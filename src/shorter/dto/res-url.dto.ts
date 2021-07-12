@@ -1,26 +1,22 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsOptional, IsBoolean } from 'class-validator';
+import { ApiResult } from './api-result';
 
-export class ResUrlDto {
-
-  @IsBoolean()
-  api_res_result: boolean;
+export class ResUrlDto extends ApiResult {
 
   @IsString()
-  api_res_msg: string;
-
-  @IsString()
-  api_key: string;
+  apiKey: string;
 
   @ApiProperty({ description: '변환이전 origin url' })
   @IsString()
-  readonly origin_url: string;
+  originUrl: string;
 
-  @ApiProperty({ description: '변환이후 shorten url' })
+  @ApiProperty({ description: '변환이후 short url' })
   @IsString()
-  shorten_url: string;
+  shortUrl: string;
 
   @IsString()
-  end_date: string;
+  endDateTime: string;
+
 }
