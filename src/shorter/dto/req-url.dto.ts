@@ -4,10 +4,11 @@ import { IsString, IsNumber, IsOptional, IsDateString, minLength, maxLength, Len
 
 export class ReqUrlDto {
 
-  @ApiProperty({ description: 'origin_url' })
+  @ApiProperty({ description: 'short url로 변경할 target url(origin url), short url 호출시 origin url로 redirect 된다.' })
   @IsString()
   originUrl: string;
 
+  @ApiProperty({ description: '서비스종료일시(yyyyMMddHH24miss)' })
   @IsString() @Length(14,14)
   endDateTime: string;
 }

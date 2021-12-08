@@ -1,8 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { map } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 import { Account } from './entities/account.entity';
+import { CreateAccountDto } from './dto/create-account.dto';
 
 @Controller('account')
 export class AccountController {
@@ -19,4 +20,9 @@ export class AccountController {
     );
   }
 
+  @Post()
+  create(@Body() accountData: CreateAccountDto) {
+    console.log(accountData);
+    this.accountService.create(accountData);
+  }
 }
