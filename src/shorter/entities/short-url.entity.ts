@@ -1,9 +1,9 @@
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
-@Entity('shortUrl')
+// @Entity('shortUrl')
 export class ShortUrl {
-  // @PrimaryColumn()
-  // @Index({ unique: true })
+  @Index({ unique: true })
+  @PrimaryColumn()
   @Column()
   apiKey: string;
 

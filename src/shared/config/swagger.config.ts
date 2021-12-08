@@ -1,14 +1,13 @@
 import { DocumentBuilder } from '@nestjs/swagger';
 
-export const swaggerOptions = new DocumentBuilder()
+export const swaggerConfig = new DocumentBuilder()
   .setTitle('Blog Application')
   .setDescription('APIs for the example blog application.')
   .setVersion('3.0.0')
   // .setHost('localhost:3000')
-  .setBasePath('/')
+  //.setBasePath('/')
   // .setSchemes('http')
   .setExternalDoc('For more information', 'http://swagger.io')
-  .addTag('blog', 'application purpose')
-  .addTag('nestjs', 'framework')
+  .addTag('system', 'shorten-url')
   // .addBearerAuth('Authorization', 'header', 'apiKey')
   .build();
