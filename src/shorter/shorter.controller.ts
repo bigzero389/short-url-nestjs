@@ -2,12 +2,11 @@ import { Body, Controller, Get, Post, Headers } from '@nestjs/common';
 import { ShorterService } from './shorter.service';
 import { ShortUrlDto } from './dto/short-url.dto';
 import { catchError, from, Observable, of, throwError } from 'rxjs';
-import { ShortUrlDateUtil } from '../shared/shared.dateUtil';
+import { DateUtil } from '../shared/util/dateUtil';
 import { ResultDto } from '../shared/dto/result.dto';
 import { ResultMsg } from '../shared/result-msg';
 import { ResultCode } from '../shared/result-code';
 import { map } from 'rxjs/operators';
-import { response } from 'express';
 
 @Controller('shorter')
 export class ShorterController {
@@ -20,6 +19,7 @@ export class ShorterController {
 
   @Post()
   createUrl(@Headers() headers, @Body() dto: ShortUrlDto) {
+    // 여기서 부터
     console.log(headers);
     const contentType = headers['content-type'] ?? '';
     const apikey = headers['shorten_api_key'] ?? '';
@@ -43,6 +43,7 @@ export class ShorterController {
       result.resultMsg = ResultMsg.getResultMsg(ResultCode.E110);
       return of(result);
     }
+    // 여기까지는 filter 로 이동해야 함.
 
     // target_url 체크
     if (!originUrl) {
@@ -53,7 +54,7 @@ export class ShorterController {
     }
 
     // end_date and period 체크
-    if (!endDatetime || !ShortUrlDateUtil.isValidDateTime(endDatetime)) {
+    if (!endDatetime || !DateUtil.isValidDateTime(endDatetime)) {
       //** 최대 1년 이내처리 추가 고민
       result.isSuccess = false;
       result.resultCode = ResultCode.E130;
@@ -65,7 +66,7 @@ export class ShorterController {
     return shortUrlEntity.pipe(
       map((entity) => {
         console.log(entity);
-        return { shortUrl: entity.short_url, ...result };
+        return { shortUrl: entity.short_url, ...result, isSuccess: true };
       }),
       catchError((err, result) => {
         console.error(err);

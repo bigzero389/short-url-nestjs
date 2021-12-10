@@ -3,7 +3,7 @@ import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 export class ResultDto {
   @IsBoolean()
   @IsNotEmpty()
-  isSuccess: boolean = true;
+  isSuccess: boolean = false;
 
   @IsString()
   resultCode: string;

@@ -1,4 +1,4 @@
-export class ShortUrlDateUtil {
+export class DateUtil {
   public static isValidDateTime(dateTime: string): boolean {
     // const dateString = dateTime.substring(0, 8);
     // console.log(dateString);
