@@ -1,6 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsNull } from 'typeorm';
 
-export class CreateAccountDto {
+export class AccountDto {
   @IsString()
   @IsNotEmpty()
   readonly accountId: string;
@@ -23,10 +24,10 @@ export class CreateAccountDto {
   @IsString()
   @Length(14, 14)
   @IsNotEmpty()
-  readonly endDateTime: string;
+  readonly endDatetime: string;
 
   @IsString()
   @Length(14, 14)
   @IsNotEmpty()
-  readonly beginDateTime: string;
+  readonly beginDatetime: string;
 }

@@ -1,21 +1,21 @@
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
 // @Entity('shortUrl')
-export class ShortUrl {
+export class ShortUrlEntity {
   @Index({ unique: true })
   @PrimaryColumn()
   @Column()
-  apiKey: string;
+  apikey: string;
 
   @Column()
-  originUrl: string;
+  origin_url: string;
 
   @Column()
-  shortUrl: string;
+  short_url: string;
 
   @Column()
-  endDateTime: string;
+  end_datetime: string;
 
   @Column()
-  beginDateTime: string;
+  begin_datetime: string;
 }

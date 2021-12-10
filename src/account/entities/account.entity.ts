@@ -1,5 +1,5 @@
 import { Column, Entity, Index, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { IsEmail, Length } from 'class-validator';
+import { IsArray, IsEmail, IsString, Length } from 'class-validator';
 import { Apikey } from './apikey.entity';
 
 @Entity('account')
@@ -11,7 +11,7 @@ export class Account {
     unique: true,
     nullable: false,
   })
-  accountId: string;
+  account_id: string;
 
   @Column({
     type: 'varchar',
@@ -47,7 +47,7 @@ export class Account {
     nullable: false,
     default: '20210101000000',
   })
-  endDateTime: string;
+  end_datetime: string;
 
   @Length(14, 14)
   @Column({
@@ -55,8 +55,7 @@ export class Account {
     nullable: false,
     default: '99991231235959',
   })
-  beginDateTime: string;
+  begin_datetime: string;
 
-  @OneToMany(() => Apikey, (apikey) => apikey.account)
   apikeys: Apikey[];
 }

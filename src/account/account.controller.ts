@@ -3,7 +3,8 @@ import { AccountService } from './account.service';
 import { map } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 import { Account } from './entities/account.entity';
-import { CreateAccountDto } from './dto/create-account.dto';
+import { AccountDto } from './dto/account.dto';
+import { ResultDto } from '../shared/dto/result.dto';
 
 @Controller('account')
 export class AccountController {
@@ -21,8 +22,18 @@ export class AccountController {
   }
 
   @Post()
-  create(@Body() accountData: CreateAccountDto) {
+  create(@Body() accountData: AccountDto): ResultDto {
     console.log(accountData);
-    this.accountService.create(accountData);
+    const result = new ResultDto();
+    try {
+      this.accountService.create(accountData);
+      result.isSuccess = true;
+    } catch (error) {
+      console.error(error);
+      result.isSuccess = false;
+      result.resultMsg = error;
+    } finally {
+      return result;
+    }
   }
 }
