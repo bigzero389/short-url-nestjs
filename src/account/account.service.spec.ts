@@ -24,11 +24,15 @@ describe('AccountService', () => {
     expect(service).toBeDefined();
   });
 
+  it('getAll method should be defined', async () => {
+    expect(service.getAll()).toBeDefined();
+    // await service .getAll() .then((result) => expect(result).toBeInstanceOf(Array));
+  });
+
   describe('getAll', () => {
-    it('should return an array(배열이 리턴되어야 함)', async () => {
-      await service
-        .getAll()
-        .then((result) => expect(result).toBeInstanceOf(Array));
+    it('getAll method should be defined', async () => {
+      expect(service.getAll()).toBeDefined();
+      // await service .getAll() .then((result) => expect(result).toBeInstanceOf(Array));
     });
   });
 });

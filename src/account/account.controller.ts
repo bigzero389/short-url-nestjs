@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { map } from 'rxjs/operators';
 import { catchError, from, Observable } from 'rxjs';
@@ -22,6 +22,16 @@ export class AccountController {
     );
   }
 
+  @Get(':id')
+  getOne(@Param() params): Observable<Account> {
+    const accountList = from(this.accountService.getOne(params.id));
+    return accountList.pipe(
+      map((accounts) => {
+        console.log(accounts);
+        return accounts;
+      }),
+    );
+  }
   @Post()
   create(@Body() reqDto: ReqAccountDto) {
     console.log(reqDto);

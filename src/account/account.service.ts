@@ -31,7 +31,7 @@ export class AccountService {
   }
 
   async getOne(id: string): Promise<Account> {
-    return await this.accountRepository.findOne({ where: { id } });
+    return await this.accountRepository.findOne({ where: { account_id: id } });
   }
 
   async deleteOne(id: string): Promise<DeleteResult | Error> {

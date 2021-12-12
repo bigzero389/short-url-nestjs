@@ -28,24 +28,4 @@ export class ObjUtil {
   public static camelToUnderscore(key) {
     return key.replace(/([A-Z])/g, '_$1').toLowerCase();
   }
-
-  public static copyObjProperty(sourceObj, targetObj) {
-    if (typeof sourceObj != 'object') {
-      return sourceObj;
-    }
-
-    if (typeof targetObj != 'object') {
-      return targetObj;
-    }
-
-    for (const propertyName in targetObj) {
-      console.log(propertyName);
-      if (sourceObj.hasOwnProperty(propertyName)) {
-        targetObj[propertyName] = sourceObj[propertyName];
-        console.log('next:' + targetObj[propertyName]);
-      }
-    }
-
-    return targetObj;
-  }
 }
