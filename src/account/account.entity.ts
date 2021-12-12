@@ -1,6 +1,7 @@
 import { Column, Entity, Index, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { IsArray, IsEmail, IsString, Length } from 'class-validator';
 import { Apikey } from './apikey.entity';
+import { PartialType } from '@nestjs/swagger';
 
 @Entity('account')
 export class Account {
@@ -59,3 +60,4 @@ export class Account {
 
   apikeys: Apikey[];
 }
+

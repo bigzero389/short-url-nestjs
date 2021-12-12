@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Account } from './entities/account.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { CreateAccountDto, UpdateAccountDto } from './account.dto';
+import { Account } from './account.entity';
 
 @Injectable()
 export class AccountService {
@@ -10,14 +11,48 @@ export class AccountService {
     private accountRepository: Repository<Account>,
   ) {}
 
-  async getAll(): Promise<Account[]> {
+  getAll(): Promise<Account[]> {
     return this.accountRepository.find();
   }
 
-  async create(accountEntity: Account): Promise<Account> {
+  async create(dto: CreateAccountDto): Promise<Account> {
     const createdData = await this.accountRepository.save({
-      ...accountEntity,
+      ...dto,
     });
     return createdData;
+  }
+
+  async getCondition(
+    queryCondition: Map<string, string>,
+  ): Promise<Account[]> {
+    const query = '';
+    const condition = [];
+    return this.accountRepository.query(query, condition);
+  }
+
+  async getOne(id: string): Promise<Account> {
+    return await this.accountRepository.findOne({ where: { id } });
+  }
+
+  async deleteOne(id: string): Promise<DeleteResult | Error> {
+    return await this.accountRepository
+      .delete(id)
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        return new Error('delete error' + err);
+      });
+  }
+
+  async update(accountId: string, dto: UpdateAccountDto): Promise<UpdateResult | Error> {
+    return await this.accountRepository
+      .update(accountId, dto)
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        return new Error('update error' + err);
+      });
   }
 }

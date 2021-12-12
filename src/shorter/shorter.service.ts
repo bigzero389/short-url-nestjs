@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ShortUrlDto } from './dto/short-url.dto';
-import { ShortUrl } from './entities/short-url.entity';
+import { ShortUrlDto } from './short-url.dto';
+import { ShortUrl } from './short-url.entity';
 
 @Injectable()
 export class ShorterService {

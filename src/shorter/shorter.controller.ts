@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Headers } from '@nestjs/common';
 import { ShorterService } from './shorter.service';
-import { ShortUrlDto } from './dto/short-url.dto';
+import { ShortUrlDto } from './short-url.dto';
 import { catchError, from, Observable, of, throwError } from 'rxjs';
 import { DateUtil } from '../shared/util/dateUtil';
 import { ResultDto } from '../shared/dto/result.dto';

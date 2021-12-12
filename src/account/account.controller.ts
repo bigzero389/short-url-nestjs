@@ -2,8 +2,8 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { map } from 'rxjs/operators';
 import { catchError, from, Observable } from 'rxjs';
-import { Account } from './entities/account.entity';
-import { AccountDto } from './dto/account.dto';
+import { Account } from './account.entity';
+import { CreateAccountDto, ReqAccountDto } from './account.dto';
 import { ResultDto } from '../shared/dto/result.dto';
 import { ObjUtil } from '../shared/util/objUtil';
 
@@ -23,11 +23,14 @@ export class AccountController {
   }
 
   @Post()
-  create(@Body() accountData: AccountDto) {
-    console.log(accountData);
-    const accountEntity = ObjUtil.camelCaseKeysToUnderscore(accountData);
+  create(@Body() reqDto: ReqAccountDto) {
+    console.log(reqDto);
+    const createAccountDto: CreateAccountDto = new CreateAccountDto();
+    Object.assign(createAccountDto, ObjUtil.camelCaseKeysToUnderscore(reqDto));
+
+    const serviceResult = from(this.accountService.create(createAccountDto));
+
     const result = new ResultDto();
-    const serviceResult = from(this.accountService.create(accountEntity));
     return serviceResult.pipe(
       map((account) => {
         console.log(account);

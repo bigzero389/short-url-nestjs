@@ -2,7 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Account } from './entities/account.entity';
+import { Account } from './account.entity';
 import { AccountService } from './account.service';
 
 describe('AccountService', () => {
@@ -10,7 +10,11 @@ describe('AccountService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [], providers: [AccountService, { provide: getRepositoryToken(Account), useClass: Repository },],
+      imports: [],
+      providers: [
+        AccountService,
+        { provide: getRepositoryToken(Account), useClass: Repository },
+      ],
     }).compile();
 
     service = await module.resolve(AccountService);
