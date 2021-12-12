@@ -1,7 +1,7 @@
 import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
 // @Entity('shortUrl')
-export class ShortUrlEntity {
+export class ShortUrl {
   @Index({ unique: true })
   @PrimaryColumn()
   @Column()

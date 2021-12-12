@@ -1,11 +1,11 @@
 import { Entity, Index, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { AccountEntity } from './account.entity';
+import { Account } from './account.entity';
 
 @Entity('apikey')
-export class ApikeyEntity {
-  @ManyToOne(() => AccountEntity, (account) => account.apikeys, { primary: true, })
+export class Apikey {
+  @ManyToOne(() => Account, (account) => account.apikeys, { primary: true, })
   @JoinColumn({ name: 'accountId' })
-  account: AccountEntity;
+  account: Account;
 
   @PrimaryColumn()
   apikey: string;

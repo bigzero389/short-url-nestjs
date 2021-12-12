@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { map } from 'rxjs/operators';
 import { catchError, from, Observable } from 'rxjs';
-import { AccountEntity } from './entities/account.entity';
+import { Account } from './entities/account.entity';
 import { AccountDto } from './dto/account.dto';
 import { ResultDto } from '../shared/dto/result.dto';
 import { ObjUtil } from '../shared/util/objUtil';
@@ -12,7 +12,7 @@ export class AccountController {
   constructor(readonly accountService: AccountService) {}
 
   @Get()
-  getAll(): Observable<AccountEntity[]> {
+  getAll(): Observable<Account[]> {
     const accountList = from(this.accountService.getAll());
     return accountList.pipe(
       map((accounts) => {

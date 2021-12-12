@@ -1,9 +1,9 @@
 import { Column, Entity, Index, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { IsArray, IsEmail, IsString, Length } from 'class-validator';
-import { ApikeyEntity } from './apikey.entity';
+import { Apikey } from './apikey.entity';
 
 @Entity('account')
-export class AccountEntity {
+export class Account {
   @Index({ unique: true })
   @PrimaryColumn({
     type: 'varchar',
@@ -57,5 +57,5 @@ export class AccountEntity {
   })
   begin_datetime: string;
 
-  apikeys: ApikeyEntity[];
+  apikeys: Apikey[];
 }

@@ -15,3 +15,6 @@
 ## test
 ### health
 * curl localhost:3000/health => return : ok
+
+### get account
+* curl localhost:3000/account => return Account Entity Array
