@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateAccountDto, UpdateAccountDto } from './account.dto';
@@ -6,6 +6,8 @@ import { Account } from './account.entity';
 
 @Injectable()
 export class AccountService {
+  private static readonly logger = new Logger(AccountService.name);
+
   constructor(
     @InjectRepository(Account)
     private accountRepository: Repository<Account>,
