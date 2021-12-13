@@ -12,9 +12,14 @@
 ## run - default port 3000
 * yarn start
 
-## test
+## test - jest
+* Service Test 에서 Repository DI가 작동하지 않음, mockRepository로 대체 [mock] [mock repository website] 
+
+## test - curl
 ### health
 * curl localhost:3000/health => return : ok
 
 ### get account
 * curl localhost:3000/account => return Account Entity Array
+
+[mock repository website](https://velog.io/@1yongs_/NestJS-Testing-Jest)

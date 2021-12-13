@@ -4,13 +4,12 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Account } from './account.entity';
 import { AccountService } from './account.service';
-import { create } from 'domain';
 import { CreateAccountDto } from './account.dto';
 
 const mockAccountRepository = () => ({
-  save: jest.fn(() => new Promise(function (resolve, reject) { resolve( new CreateAccountDto()); })),
-  find: jest.fn(() => new Promise(function (resolve, reject) { resolve( new Array<CreateAccountDto>()); })),
-  findOne: jest.fn(),
+  save: jest.fn(() => new Promise( (resolve) => { resolve( new CreateAccountDto()); })),
+  find: jest.fn(() => new Promise((resolve) => { resolve(new Array<CreateAccountDto>()); })),
+  findOne: jest.fn(() => new Promise((resolve) => { resolve(new CreateAccountDto()); })),
   update: jest.fn(),
   softDelete: jest.fn(),
 });
@@ -26,10 +25,9 @@ describe('AccountService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       providers: [
-        // AccountService, { provide: getRepositoryToken(Account), useClass: Repository },
-        // AccountService, { provide: getRepositoryToken(Account), useValue: mockAccountRepository(), },
-        AccountService, { provide: getRepositoryToken(Account), useFactory: mockAccountRepository, },
-        // AccountService, { provide: getRepositoryToken(Account), useValue: repository, },
+        // AccountService, { provide: getRepositoryToken(Account), useClass: Repository }, // DI가 정상적으로 작동하는 경우 이렇게 해야 된다.
+        // AccountService, { provide: getRepositoryToken(Account), useValue: repository, }, // Repository를 Custom으로 만들어 적용하는 경우 처리. 이것도 현재는 안됨.
+        AccountService, { provide: getRepositoryToken(Account), useFactory: mockAccountRepository, }, // 결국 mock으로 처리.
       ],
     }).compile();
 
@@ -42,7 +40,6 @@ describe('AccountService', () => {
   });
 
   it('create', async () => {
-    // expect(service.getAll()).toBeDefined();
     const createAccountDto = {
       accountId: 'bigzero4',
       name: 'dyheo',
