@@ -1,15 +1,15 @@
-import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
 import { Account } from './account.entity';
 
-export class ReqAccountDto {
+export class PostReqDto {
   @IsString()
   @IsNotEmpty()
   accountId: string;
 
   @IsString()
   @IsNotEmpty()
-  name: string;
+  accountName: string;
 
   @IsEmail()
   @IsNotEmpty()
@@ -33,5 +33,26 @@ export class ReqAccountDto {
   beginDatetime: string;
 }
 
-export class CreateAccountDto extends PartialType(Account) {}
+class UpdateWhereOptions {
+  @IsString()
+  @IsOptional()
+  accountId: string;
+
+  @IsString()
+  @IsOptional()
+  accountName: string;
+
+  @IsEmail()
+  @IsOptional()
+  email: string;
+
+  @IsString()
+  @IsOptional()
+  tel: string;
+}
+export class PutReqDto extends PartialType(PostReqDto) {
+  @IsNotEmpty()
+  updateWhereOptions: UpdateWhereOptions;
+}
+export class CreateAccountDto extends Account {}
 export class UpdateAccountDto extends PartialType(Account) {}

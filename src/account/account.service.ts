@@ -1,60 +1,83 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, FindConditions, getCustomRepository, Repository, UpdateResult } from 'typeorm';
 import { CreateAccountDto, UpdateAccountDto } from './account.dto';
 import { Account } from './account.entity';
+import { AccountRepository } from './account.repository';
 
 @Injectable()
 export class AccountService {
-  private static readonly logger = new Logger(AccountService.name);
+  private static readonly LOGGER = new Logger(AccountService.name);
 
   constructor(
-    @InjectRepository(Account)
-    private accountRepository: Repository<Account>,
+    // Custom Repository를 썼지만 실행은 되는데 jest 가 안됨.
+    // @InjectRepository(Account) private accountRepository: AccountRepository,
+    @InjectRepository(Account) private accountRepository: Repository<Account>,
   ) {}
 
-  getAll(): Promise<Account[]> {
-    return this.accountRepository.find();
+  async getAll(): Promise<Account[]> {
+    const result = await this.accountRepository
+      .find()
+      .then((result) => result)
+      .catch((err) => {
+        AccountService.LOGGER.error('getAll: ' + err);
+        return new Array<Account>();
+      });
+    return result;
   }
 
   async create(dto: CreateAccountDto): Promise<Account> {
-    const createdData = await this.accountRepository.save({
-      ...dto,
-    });
+    const createdData = await this.accountRepository
+      .save({
+        ...dto,
+      })
+      .then((result) => result)
+      .catch((err) => {
+        AccountService.LOGGER.error('create: ' + err);
+        return new Account();
+      });
     return createdData;
   }
 
-  async getCondition(
-    queryCondition: Map<string, string>,
-  ): Promise<Account[]> {
-    const query = '';
-    const condition = [];
-    return this.accountRepository.query(query, condition);
+  async get(conditions: FindConditions<Account>): Promise<Account[]> {
+    return await this.accountRepository.find(conditions);
   }
 
-  async getOne(id: string): Promise<Account> {
-    return await this.accountRepository.findOne({ where: { account_id: id } });
+  async getOne(account_id: string): Promise<Account> {
+    const result = await this.accountRepository
+      .findOne({ where: { account_id: account_id }, cache: false })
+      .then((result) => result)
+      .catch((err) => {
+        AccountService.LOGGER.error('getOne: ' + err);
+        return new Account();
+      });
+    return result;
   }
 
-  async deleteOne(id: string): Promise<DeleteResult | Error> {
+  async deleteOne(conditions: FindConditions<Account>): Promise<DeleteResult> {
     return await this.accountRepository
-      .delete(id)
+      .delete(conditions)
       .then((result) => {
         return result;
       })
       .catch((err) => {
-        return new Error('delete error' + err);
+        AccountService.LOGGER.error('deleteOne: ' + err);
+        return new DeleteResult();
       });
   }
 
-  async update(accountId: string, dto: UpdateAccountDto): Promise<UpdateResult | Error> {
+  async update(
+    conditions: FindConditions<Account>,
+    updateDataDto: UpdateAccountDto,
+  ): Promise<UpdateResult> {
     return await this.accountRepository
-      .update(accountId, dto)
+      .update(conditions, { ...updateDataDto })
       .then((result) => {
         return result;
       })
       .catch((err) => {
-        return new Error('update error' + err);
+        AccountService.LOGGER.error('update: ' + err);
+        return new UpdateResult();
       });
   }
 }

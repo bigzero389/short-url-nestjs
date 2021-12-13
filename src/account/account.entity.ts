@@ -1,25 +1,28 @@
 import { Column, Entity, Index, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { IsArray, IsEmail, IsString, Length } from 'class-validator';
+import { IsArray, IsEmail, IsNotEmpty, IsString, Length, Max, Min } from 'class-validator';
 import { Apikey } from './apikey.entity';
 import { PartialType } from '@nestjs/swagger';
+import { ValidationEntity } from '../shared/util/validation.entity';
 
 @Entity('account')
 export class Account {
   @Index({ unique: true })
+  @Length(0, 50)
   @PrimaryColumn({
     type: 'varchar',
-    length: 30,
+    length: 50,
     unique: true,
     nullable: false,
   })
   account_id: string;
 
+  @Length(0, 100)
   @Column({
     type: 'varchar',
-    length: 30,
+    length: 100,
     nullable: false,
   })
-  name: string;
+  account_name: string;
 
   @IsEmail()
   @Column({
@@ -32,13 +35,15 @@ export class Account {
   @Column({
     type: 'varchar',
     nullable: false,
+    length: 20,
   })
   tel: string;
 
-  @Length(0, 200)
+  @Length(0, 1000)
   @Column({
     type: 'varchar',
     nullable: true,
+    length: 1000,
   })
   remark: string;
 
@@ -46,6 +51,7 @@ export class Account {
   @Column({
     type: 'varchar',
     nullable: false,
+    length: 14,
     default: '20210101000000',
   })
   end_datetime: string;
@@ -54,10 +60,10 @@ export class Account {
   @Column({
     type: 'varchar',
     nullable: false,
+    length: 14,
     default: '99991231235959',
   })
   begin_datetime: string;
 
   apikeys: Apikey[];
 }
-

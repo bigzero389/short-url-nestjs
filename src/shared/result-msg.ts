@@ -7,7 +7,8 @@ export class ResultMsg {
     [ResultCode.E120, 'origin url error'],
     [ResultCode.E130, 'end datetime error'],
     [ResultCode.E130, 'end datetime should in 1 year'],
-    [ResultCode.E500, 'internal data error'],
+    [ResultCode.E400, 'biz error'],
+    [ResultCode.E500, 'data error'],
   ]);
 
   static getResultMsg(code: string) {
