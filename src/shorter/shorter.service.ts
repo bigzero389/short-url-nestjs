@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ShortUrlDto } from './short-url.dto';
-import { ShortUrl } from './short-url.entity';
+import { ShorterDto } from './shorter.dto';
+import { Shorter } from './shorter.entity';
 
 @Injectable()
 export class ShorterService {
@@ -8,9 +8,9 @@ export class ShorterService {
     return 'Hello World!';
   }
 
-  async createShortUrl(dto: ShortUrlDto): Promise<ShortUrl> {
-    return new Promise<ShortUrl>((resolve, reject) => {
-      const shortUrlEntity: ShortUrl = new ShortUrl();
+  async createShortUrl(dto: ShorterDto): Promise<Shorter> {
+    return new Promise<Shorter>((resolve, reject) => {
+      const shortUrlEntity: Shorter = new Shorter();
       // origin url 을 short url 로 변환한다.
       shortUrlEntity.short_url = 'https://s.hist-tech.net/asldfkjalskd';
       shortUrlEntity.origin_url = dto.originUrl;

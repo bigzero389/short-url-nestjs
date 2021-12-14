@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Headers } from '@nestjs/common';
 import { ShorterService } from './shorter.service';
-import { ShortUrlDto } from './short-url.dto';
+import { ShorterDto } from './shorter.dto';
 import { catchError, from, Observable, of, throwError } from 'rxjs';
 import { DateUtil } from '../shared/util/dateUtil';
-import { ResultDto } from '../shared/dto/result.dto';
+import { ResultDto } from '../shared/result.dto';
 import { ResultMsg } from '../shared/result-msg';
 import { ResultCode } from '../shared/result-code';
 import { map } from 'rxjs/operators';
@@ -18,7 +18,7 @@ export class ShorterController {
   }
 
   @Post()
-  createUrl(@Headers() headers, @Body() dto: ShortUrlDto) {
+  createUrl(@Headers() headers, @Body() dto: ShorterDto) {
     // 여기서 부터
     console.log(headers);
     const contentType = headers['content-type'] ?? '';

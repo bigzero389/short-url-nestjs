@@ -15,17 +15,6 @@ export class AccountService {
     @InjectRepository(Account) private accountRepository: Repository<Account>,
   ) {}
 
-  async getAll(): Promise<Account[]> {
-    const result = await this.accountRepository
-      .find()
-      .then((result) => result)
-      .catch((err) => {
-        AccountService.LOGGER.error('getAll: ' + err);
-        return new Array<Account>();
-      });
-    return result;
-  }
-
   async create(dto: CreateAccountDto): Promise<Account> {
     const createdData = await this.accountRepository
       .save({
@@ -40,7 +29,14 @@ export class AccountService {
   }
 
   async get(conditions: FindConditions<Account>): Promise<Account[]> {
-    return await this.accountRepository.find(conditions);
+    const accountList = await this.accountRepository
+      .find(conditions)
+      .then((result) => result)
+      .catch((err) => {
+        AccountService.LOGGER.error('get: ' + err);
+        return new Array<Account>();
+      });
+    return accountList;
   }
 
   async getOne(account_id: string): Promise<Account> {

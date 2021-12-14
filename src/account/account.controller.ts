@@ -1,30 +1,19 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Req } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { map } from 'rxjs/operators';
-import { catchError, from, Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { Account } from './account.entity';
 import { CreateAccountDto, PostReqDto, PutReqDto, UpdateAccountDto } from './account.dto';
-import { ResultDto } from '../shared/dto/result.dto';
-import { ObjUtil } from '../shared/util/objUtil';
+import { ResultDto } from '../shared/result.dto';
+import { LikeType, ObjUtil } from '../shared/util/objUtil';
 import { ResultCode } from '../shared/result-code';
 import { ResultMsg } from '../shared/result-msg';
-import { FindConditions } from 'typeorm';
+import { FindConditions, Like } from 'typeorm';
 
 @Controller('account')
 export class AccountController {
   private static readonly LOGGER = new Logger(AccountController.name);
   constructor(readonly accountService: AccountService) {}
-
-  @Get()
-  getAll(): Observable<Account[]> {
-    const accountList = from(this.accountService.getAll());
-    return accountList.pipe(
-      map((accounts) => {
-        AccountController.LOGGER.debug('getAll: ' + JSON.stringify(accounts));
-        return accounts;
-      }),
-    );
-  }
 
   @Get(':accountId')
   getOne(@Param() params): Observable<Account> {
@@ -36,6 +25,28 @@ export class AccountController {
       }),
     );
   }
+
+  @Get()
+  get(@Req() req): Observable<Account[]> {
+    const targetObj = req.query;
+    const conditionMap = new Map<string, LikeType>([
+      ['accountId', LikeType.NOT],
+      ['accountName', LikeType.ALL],
+      ['email', LikeType.RIGHT],
+      ['tel', LikeType.ALL],
+    ]);
+    const conditions = ObjUtil.condition(conditionMap, targetObj);
+    AccountController.LOGGER.debug('conditions: ' + JSON.stringify(conditions));
+
+    const accountList = from(this.accountService.get(conditions));
+    return accountList.pipe(
+      map((result) => {
+        AccountController.LOGGER.debug('get: ' + result);
+        return result;
+      }),
+    );
+  }
+
   @Post()
   create(@Body() postReqDto: PostReqDto) {
     AccountController.LOGGER.debug('create postReqDto: ' + JSON.stringify(postReqDto));
@@ -70,6 +81,7 @@ export class AccountController {
         AccountController.LOGGER.debug('deleteOne result: ' + JSON.stringify(result));
         if (result.affected != undefined) {
           resultDto.isSuccess = true;
+          resultDto.resultCnt = result.affected;
           resultDto.resultMsg = 'deleted record count is ' + result.affected;
           return resultDto;
         } else {
@@ -84,19 +96,20 @@ export class AccountController {
 
   @Put()
   update(@Body() putReqDto: PutReqDto): Observable<ResultDto> {
-    // where 절 동적 생성 부분, 자동화 하려고 했는데 다양한 경우를 자동화가 가능한지 확신이 없어서 일단 수동으로 함.
     AccountController.LOGGER.debug('update putReqDto: ' + JSON.stringify(putReqDto));
-    let conditions = {};
-    if (putReqDto.updateWhereOptions.accountId) {
-      conditions = { ...conditions, account_id: putReqDto.updateWhereOptions.accountId };
-    }
-    if (putReqDto.updateWhereOptions.accountName) {
-      conditions = { ...conditions, account_name: putReqDto.updateWhereOptions.accountName};
-    }
+
+    // where 절 동적 생성 부분.
+    const targetObj = putReqDto.updateWhereOptions;
+    const conditionMap = new Map<string, LikeType>([
+      ['accountId', LikeType.NOT],
+      ['accountName', LikeType.NOT],
+      ['email', LikeType.NOT],
+      ['tel', LikeType.NOT],
+    ]);
+    const conditions = ObjUtil.condition(conditionMap, targetObj);
+    AccountController.LOGGER.debug('conditions: ' + JSON.stringify(conditions));
     delete putReqDto['updateWhereOptions']; // putReqDto 에서 whereOption 제거.
     // 여기까지 where 절 동적 생성 부분
-
-    AccountController.LOGGER.debug('conditions : ' + JSON.stringify(conditions));
 
     const updateAccountDto: UpdateAccountDto = new UpdateAccountDto();
     Object.assign(updateAccountDto, ObjUtil.camelCaseKeysToUnderscore(putReqDto));
@@ -111,6 +124,7 @@ export class AccountController {
       map((result) => {
         AccountController.LOGGER.debug('update result: ' + JSON.stringify(result));
         if (result.affected != undefined) {
+          resultDto.resultCnt = result.affected;
           resultDto.isSuccess = true;
           resultDto.resultMsg = 'updated record count is ' + result.affected;
           return resultDto;
