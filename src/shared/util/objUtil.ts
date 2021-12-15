@@ -35,6 +35,7 @@ export class ObjUtil {
     return key.replace(/([A-Z])/g, '_$1').toLowerCase();
   }
 
+  // TypeORM where 절 생성기
   public static condition(keys: Map<string, LikeType>, target: any): any {
     // let conditions = {};
     // if (req.query['accountId']) {

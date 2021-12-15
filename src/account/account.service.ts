@@ -5,6 +5,9 @@ import { CreateAccountDto, UpdateAccountDto } from './account.dto';
 import { Account } from './account.entity';
 import { AccountRepository } from './account.repository';
 
+// @TODO : OR 절 구현 확인
+// @TODO : IN 절 구현 확인
+// @TODO : GROUP BY 절 구현 확인
 @Injectable()
 export class AccountService {
   private static readonly LOGGER = new Logger(AccountService.name);
@@ -30,7 +33,7 @@ export class AccountService {
 
   async get(conditions: FindConditions<Account>): Promise<Account[]> {
     const accountList = await this.accountRepository
-      .find(conditions)
+      .find({ ...conditions, order: { account_id: 'DESC' } })
       .then((result) => result)
       .catch((err) => {
         AccountService.LOGGER.error('get: ' + err);

@@ -41,7 +41,7 @@ export class AccountController {
     const accountList = from(this.accountService.get(conditions));
     return accountList.pipe(
       map((result) => {
-        AccountController.LOGGER.debug('get: ' + result);
+        AccountController.LOGGER.debug('get: ' + JSON.stringify(result));
         return result;
       }),
     );

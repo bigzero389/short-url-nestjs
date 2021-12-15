@@ -52,12 +52,15 @@ describe('AccountService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       providers: [
+        // @TODO : jest에서 nestjs DI 지원안되는 상황 방법확인 필요
+        // - 실제 DB를 이용한 jest test를 하려면 Repository 가 DI가 되어야 하는데 jest에서 Nestjs의 DI되지 않아서 못함
+        // - MockRepository를 사용해서 Test Case를 만들었는데 서비스에 많은 비즈니스 로직이 없는 상황에서는 Service의 Test Case 효용성이 떨어짐. Controller Test Case 위주로 작성하는 것이 효율적일 듯 함
         // AccountService, { provide: getRepositoryToken(Account), useClass: Repository }, // DI가 정상적으로 작동하는 경우 이렇게 해야 된다.
         // AccountService, { provide: getRepositoryToken(Account), useValue: repository, }, // Repository를 Custom으로 만들어 적용하는 경우 처리. 이것도 현재는 안됨.
         // AccountService, { provide: getRepositoryToken(Account), useClass: MockRepository<AccountRepository>, }, // Repository를 Custom으로 만들어 적용하는 경우 처리. 이것도 현재는 안됨.
         // AccountService, { provide: getRepositoryToken(Account), useFactory: mockAccountRepository, }, // 결국 mock으로 처리.
-        AccountService, { provide: getRepositoryToken(Account), useValue: mockAccountRepository(), }, // 결국 mock으로 처리.
         // AccountService, { provide: getRepositoryToken(Account), useValue: mockRepository }, // 결국 mock으로 처리.
+        AccountService, { provide: getRepositoryToken(Account), useValue: mockAccountRepository(), }, // 결국 mock으로 처리.
       ],
     }).compile();
 
@@ -83,9 +86,9 @@ describe('AccountService', () => {
       expect(result.account_id).toEqual('bigzero2');
     });
 
-    it('getAll', async () => {
+    it('get', async () => {
       mockRepository.find.mockResolvedValue(accountList);
-      const result = await service.getAll();
+      const result = await service.get({});
       expect(result.length).toBe(2);
     });
 
@@ -134,3 +137,17 @@ describe('AccountService', () => {
     });
   });
 });
+/*
+- jest 동적클래스 생성 문제
+	- jest 에서 동적클래스 테스트가 안됨
+	- jest is incorrectly mapping external modules to non-existing directories
+	- Repository 를 실제파일로 작성했었는데도 왜 같은 에러가 나는 건지 모르겠음. 다시 해봄
+	- https://github.com/nestjs/nest/issues/363 => Nest Testing Dependency Issues
+	- https://velog.io/@ssook_veloper/jest%EC%99%80-typeorm-typedi => Typescript 에서 DI 사용법 => 적용해봤는데 결과는 동일했음.
+	- https://yangeok.github.io/orm/2020/12/14/typeorm-decorators.html => Typeorm 데코레이터 사용법
+	- https://darrengwon.tistory.com/999?category=915252 => 이 글이 가장 자세한 내용임.
+	- https://github.com/typeorm/typeorm/blob/master/docs/find-options.md => typeorm find options
+	- https://docs.nestjs.com/pipes => class validator pipe => 적용검토 ,
+	// 일단 현재는 아래 블로그 내용으로 적용함. 2021.12.15
+	- https://velog.io/@1yongs_/NestJS-Testing-Jest => Jest 에서 Repository DI불가로 인해 mockRepository 사용
+ */
