@@ -29,11 +29,12 @@
 * yarn start // default port 3000
 
 ## Testing
+### swagger
+* http://localhost:3000/swagger
 ### yarn run test
 * yarn run test // all test run
 * yarn run test -o --watch // use testing menu
 * yarn run test -t \[testing name regexp] // ex) yarn run test -t AccoutService
-
 ### test - curl
 ```
 // Get all data
