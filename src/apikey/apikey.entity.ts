@@ -12,13 +12,10 @@ export class Apikey {
   })
   apikey: string;
 
-  @Column({
-    type: 'varchar',
-    length: 50,
-    nullable: false,
-  })
-  @IsNotEmpty()
-  account: Account;
+  @ManyToOne(() => Account, (account) => account.apikeys, { nullable: false })
+  @JoinColumn({ name: 'account_id' })
+  account_id: string;
+  // account: Account;
 
   @Column({
     type: 'varchar',

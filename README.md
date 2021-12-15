@@ -24,7 +24,7 @@
 * git clone https://github.com/largezero/ShortURL.git
 ### yarn installation
 * yarn global add @nestjs/cli
-* yarn add @nestjs/typeorm pg
+* yarn add @nestjs/typeorm pg crypto 
 * yarn install
 * yarn start // default port 3000
 

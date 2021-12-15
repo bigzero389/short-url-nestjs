@@ -3,7 +3,7 @@ import { AccountService } from './account.service';
 import { map } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 import { Account } from './account.entity';
-import { CreateAccountDto, PostReqDto, PutReqDto, UpdateAccountDto } from './account.dto';
+import { CreateAccountDto, PostAccountDto, PutAccountDto, UpdateAccountDto } from './account.dto';
 import { ResultDto } from '../shared/result.dto';
 import { LikeType, ObjUtil } from '../shared/util/objUtil';
 import { ResultCode } from '../shared/result-code';
@@ -48,10 +48,10 @@ export class AccountController {
   }
 
   @Post()
-  create(@Body() postReqDto: PostReqDto) {
-    AccountController.LOGGER.debug('create postReqDto: ' + JSON.stringify(postReqDto));
+  create(@Body() postDto: PostAccountDto) {
+    AccountController.LOGGER.debug('create postAccountDto: ' + JSON.stringify(postDto));
     const createAccountDto: CreateAccountDto = new CreateAccountDto();
-    Object.assign(createAccountDto, ObjUtil.camelCaseKeysToUnderscore(postReqDto));
+    Object.assign(createAccountDto, ObjUtil.camelCaseKeysToUnderscore(postDto));
 
     const serviceResult = from(this.accountService.create(createAccountDto));
 
@@ -95,7 +95,7 @@ export class AccountController {
   }
 
   @Put()
-  update(@Body() putReqDto: PutReqDto): Observable<ResultDto> {
+  update(@Body() putReqDto: PutAccountDto): Observable<ResultDto> {
     AccountController.LOGGER.debug('update putReqDto: ' + JSON.stringify(putReqDto));
 
     // where 절 동적 생성 부분.

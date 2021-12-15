@@ -1,6 +1,6 @@
 import { Column, Entity, Index, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { IsArray, IsEmail, IsNotEmpty, IsString, Length, Max, Min } from 'class-validator';
-import { Apikey } from '../shorter/apikey.entity';
+import { Apikey } from '../apikey/apikey.entity';
 import { PartialType } from '@nestjs/swagger';
 import { ValidationEntity } from '../shared/util/validation.entity';
 
@@ -65,5 +65,6 @@ export class Account {
   @Length(14, 14)
   begin_datetime: string;
 
-  // apikeys: Apikey[];
+  @OneToMany(() => Apikey, (apikey) => apikey.apikey)
+  apikeys: Apikey[];
 }

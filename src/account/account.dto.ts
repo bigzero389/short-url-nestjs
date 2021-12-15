@@ -2,7 +2,7 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString, Length } from 'class-validat
 import { PartialType } from '@nestjs/swagger';
 import { Account } from './account.entity';
 
-export class PostReqDto {
+export class PostAccountDto {
   @IsString()
   @IsNotEmpty()
   accountId: string;
@@ -50,7 +50,7 @@ class UpdateWhereOptions {
   @IsOptional()
   tel: string;
 }
-export class PutReqDto extends PartialType(PostReqDto) {
+export class PutAccountDto extends PartialType(PostAccountDto) {
   @IsNotEmpty()
   updateWhereOptions: UpdateWhereOptions;
 }
