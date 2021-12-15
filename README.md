@@ -1,5 +1,13 @@
 # NestJS practical example
 ### Title : Shorten-URL Nest Service
+### Purpose
+* 기초적인 CRUD가 아닌 실제 현업에서 사용 가능한 수준의 Data Handling 예제
+* DBMS 에 종속되지 않는 ORM 도구의 실질적 사용
+* 라이브러리 최소화 및 검증된 라이브러리 사용을 통한 지속적 유지보수성
+* 각각의 Layer별 일관된 에러처리 및 보안을 위한 최소한의 메시지처리
+* 타 시스템과의 연계를 고려한 인터페이스 표준화 및 Validation처리
+* OS, Docker등 제반 인프라 환경에 종속적이지 않은 Application 환경 독립성 제공
+* 실질적인 Test Case 예제 구현
 
 ## Runtime environment
 ### build tool : yarn
