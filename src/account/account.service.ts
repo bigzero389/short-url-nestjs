@@ -53,7 +53,8 @@ export class AccountService {
     return result;
   }
 
-  async deleteOne(conditions: FindConditions<Account>): Promise<DeleteResult> {
+  async deleteOne(account_id: string): Promise<DeleteResult> {
+    const conditions: FindConditions<Account> = { account_id: account_id };
     return await this.accountRepository
       .delete(conditions)
       .then((result) => {

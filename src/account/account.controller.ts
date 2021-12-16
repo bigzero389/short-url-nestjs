@@ -71,11 +71,10 @@ export class AccountController {
     );
   }
 
-  @Delete(':id')
+  @Delete(':accountId')
   deleteOne(@Param() params): Observable<ResultDto> {
     const resultDto = new ResultDto();
-    const conditions: FindConditions<Account> = { account_id: params.id }
-    const result = from(this.accountService.deleteOne(conditions));
+    const result = from(this.accountService.deleteOne(params.accountId));
     return result.pipe(
       map((result) => {
         AccountController.LOGGER.debug('deleteOne result: ' + JSON.stringify(result));
