@@ -19,16 +19,9 @@ export class ApikeyController {
   @Post()
   create(@Body() postDto: PostApikeyDto) {
     ApikeyController.LOGGER.debug('create postApikeyDto: ' + JSON.stringify(postDto));
-
-    const createApikeyDto: CreateApikeyDto = new CreateApikeyDto();
-    Object.assign(createApikeyDto, ObjUtil.camelCaseKeysToUnderscore(postDto));
-
-    const hashSeed = {
-      account_id: createApikeyDto.account_id,
-      time: new Date(),
-    };
-    createApikeyDto.apikey = Hash(hashSeed);
-    const serviceResult = from(this.apikeyService.create(createApikeyDto));
+    // apikey를 accountId 와 date seed로 random 생성.
+    postDto.apikey = Hash({ account_id: postDto.accountId, time: new Date(), });
+    const serviceResult = from(this.apikeyService.create(postDto));
 
     const resultDto = new ResultDto();
     return serviceResult.pipe(

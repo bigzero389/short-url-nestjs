@@ -2,8 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Apikey } from './apikey.entity';
 import { FindConditions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateApikeyDto } from './apikey.dto';
+import { CreateApikeyDto, PostApikeyDto } from './apikey.dto';
 import { Account } from '../account/account.entity';
+import { CreateAccountDto } from '../account/account.dto';
+import { ObjUtil } from '../shared/util/objUtil';
 
 @Injectable()
 export class ApikeyService {
@@ -13,11 +15,13 @@ export class ApikeyService {
     @InjectRepository(Apikey) private apikeyRepository: Repository<Apikey>,
   ) {}
 
-  async create(dto: CreateApikeyDto): Promise<Apikey> {
+  async create(postDto: PostApikeyDto): Promise<Apikey> {
+    // dto 를 entity 로 변환.
+    const createApikeyDto: CreateApikeyDto = new CreateApikeyDto();
+    Object.assign(createApikeyDto, ObjUtil.camelCaseKeysToUnderscore(postDto));
+
     const createdData = await this.apikeyRepository
-      .save({
-        ...dto,
-      })
+      .save({ ...createApikeyDto, })
       .then((result) => result)
       .catch((err) => {
         ApikeyService.LOGGER.error('create: ' + err);

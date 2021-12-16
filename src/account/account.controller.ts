@@ -3,7 +3,7 @@ import { AccountService } from './account.service';
 import { map } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
 import { Account } from './account.entity';
-import { CreateAccountDto, PostAccountDto, PutAccountDto, UpdateAccountDto } from './account.dto';
+import { CreateAccountDto, PostAccountDto, PutAccountDto, } from './account.dto';
 import { ResultDto } from '../shared/result.dto';
 import { LikeType, ObjUtil } from '../shared/util/objUtil';
 import { ResultCode } from '../shared/result-code';
@@ -28,17 +28,10 @@ export class AccountController {
 
   @Get()
   get(@Req() req): Observable<Account[]> {
-    const targetObj = req.query;
-    const conditionMap = new Map<string, LikeType>([
-      ['accountId', LikeType.NOT],
-      ['accountName', LikeType.ALL],
-      ['email', LikeType.RIGHT],
-      ['tel', LikeType.ALL],
-    ]);
-    const conditions = ObjUtil.condition(conditionMap, targetObj);
-    AccountController.LOGGER.debug('conditions: ' + JSON.stringify(conditions));
+    const getQueryParams = req.query;
+    AccountController.LOGGER.debug('account get: ' + JSON.stringify(getQueryParams));
 
-    const accountList = from(this.accountService.get(conditions));
+    const accountList = from(this.accountService.get(getQueryParams));
     return accountList.pipe(
       map((result) => {
         AccountController.LOGGER.debug('get: ' + JSON.stringify(result));
@@ -53,8 +46,7 @@ export class AccountController {
     const createAccountDto: CreateAccountDto = new CreateAccountDto();
     Object.assign(createAccountDto, ObjUtil.camelCaseKeysToUnderscore(postDto));
 
-    const serviceResult = from(this.accountService.create(createAccountDto));
-
+    const serviceResult = from(this.accountService.create(postDto));
     const resultDto = new ResultDto();
     return serviceResult.pipe(
       map((account) => {
@@ -94,34 +86,16 @@ export class AccountController {
   }
 
   @Put()
-  update(@Body() putReqDto: PutAccountDto): Observable<ResultDto> {
-    AccountController.LOGGER.debug('update putReqDto: ' + JSON.stringify(putReqDto));
+  update(@Body() putAccountDto: PutAccountDto): Observable<ResultDto> {
+    AccountController.LOGGER.debug( 'update putAccountDto: ' + JSON.stringify(putAccountDto), );
 
-    // where 절 동적 생성 부분.
-    const targetObj = putReqDto.updateWhereOptions;
-    const conditionMap = new Map<string, LikeType>([
-      ['accountId', LikeType.NOT],
-      ['accountName', LikeType.NOT],
-      ['email', LikeType.NOT],
-      ['tel', LikeType.NOT],
-    ]);
-    const conditions = ObjUtil.condition(conditionMap, targetObj);
-    AccountController.LOGGER.debug('conditions: ' + JSON.stringify(conditions));
-    delete putReqDto['updateWhereOptions']; // putReqDto 에서 whereOption 제거.
-    // 여기까지 where 절 동적 생성 부분
-
-    const updateAccountDto: UpdateAccountDto = new UpdateAccountDto();
-    Object.assign(updateAccountDto, ObjUtil.camelCaseKeysToUnderscore(putReqDto));
-
-    AccountController.LOGGER.debug('updateAccountDto: ' + JSON.stringify(updateAccountDto));
-
-    const result = from(
-      this.accountService.update(conditions, updateAccountDto),
-    );
+    const result = from( this.accountService.update(putAccountDto), );
     const resultDto = new ResultDto();
     return result.pipe(
       map((result) => {
-        AccountController.LOGGER.debug('update result: ' + JSON.stringify(result));
+        AccountController.LOGGER.debug(
+          'update result: ' + JSON.stringify(result),
+        );
         if (result.affected != undefined) {
           resultDto.resultCnt = result.affected;
           resultDto.isSuccess = true;

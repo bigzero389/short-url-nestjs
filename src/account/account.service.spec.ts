@@ -1,10 +1,15 @@
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, Put } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { DeleteResult, FindConditions, Repository, UpdateResult } from 'typeorm';
+import {
+  DeleteResult,
+  FindConditions,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { Account } from './account.entity';
 import { AccountService } from './account.service';
-import { CreateAccountDto } from './account.dto';
+import { CreateAccountDto, PostAccountDto, PutAccountDto } from './account.dto';
 import { AccountRepository } from './account.repository';
 import { before } from '@nestjs/swagger/dist/plugin';
 
@@ -60,7 +65,11 @@ describe('AccountService', () => {
         // AccountService, { provide: getRepositoryToken(Account), useClass: MockRepository<AccountRepository>, }, // Repository를 Custom으로 만들어 적용하는 경우 처리. 이것도 현재는 안됨.
         // AccountService, { provide: getRepositoryToken(Account), useFactory: mockAccountRepository, }, // 결국 mock으로 처리.
         // AccountService, { provide: getRepositoryToken(Account), useValue: mockRepository }, // 결국 mock으로 처리.
-        AccountService, { provide: getRepositoryToken(Account), useValue: mockAccountRepository(), }, // 결국 mock으로 처리.
+        AccountService,
+        {
+          provide: getRepositoryToken(Account),
+          useValue: mockAccountRepository(),
+        }, // 결국 mock으로 처리.
       ],
     }).compile();
 
@@ -74,7 +83,7 @@ describe('AccountService', () => {
 
   describe('create', () => {
     it('create', async () => {
-      const result = await service.create(new CreateAccountDto());
+      const result = await service.create(new PostAccountDto());
       expect(result).toBeInstanceOf(CreateAccountDto);
     });
   });
@@ -104,16 +113,14 @@ describe('AccountService', () => {
       const deleteResult = new DeleteResult();
       deleteResult.affected = 1;
       mockRepository.delete.mockResolvedValue(deleteResult);
-      const conditions: FindConditions<Account> = { account_id: 'bigzero1' };
-      const result = await service.deleteOne(conditions);
+      const result = await service.deleteOne('deleteId');
       expect(result.affected).toEqual(1);
     });
 
     it('deleteOne fail', async () => {
       const deleteResult = new DeleteResult();
       mockRepository.delete.mockResolvedValue(deleteResult);
-      const conditions: FindConditions<Account> = { account_id: 'isNotExist' };
-      const result = await service.deleteOne(conditions);
+      const result = await service.deleteOne('isNotExist');
       expect(result.affected).toEqual(undefined);
     });
   });
@@ -123,16 +130,26 @@ describe('AccountService', () => {
       const updateResult = new UpdateResult();
       updateResult.affected = 1;
       mockRepository.update.mockResolvedValue(updateResult);
-      const conditions: FindConditions<Account> = { account_id: 'bigzero1' };
-      const result = await service.update(conditions, {});
+      const testData = JSON.stringify({
+        accountId: 'updatedAccountId',
+        updateWhereOptions: {
+          accountName: 'dyheo1',
+        },
+      });
+      const result = await service.update(JSON.parse(testData));
       expect(result.affected).toEqual(1);
     });
 
     it('update fail', async () => {
       const updateResult = new UpdateResult();
       mockRepository.update.mockResolvedValue(updateResult);
-      const conditions: FindConditions<Account> = { account_id: 'isNotExist' };
-      const result = await service.update(conditions, {});
+      const testData = JSON.stringify({
+        accountId: 'accountId',
+        updateWhereOptions: {
+          accountName: 'isNotExist',
+        },
+      });
+      const result = await service.update(JSON.parse(testData));
       expect(result.affected).toEqual(undefined);
     });
   });

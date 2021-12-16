@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
 import { Account } from './account.entity';
 
@@ -50,9 +56,45 @@ class UpdateWhereOptions {
   @IsOptional()
   tel: string;
 }
-export class PutAccountDto extends PartialType(PostAccountDto) {
+
+export class PutAccountDto {
+  @IsString()
+  @IsOptional()
+  accountId: string;
+
+  @IsString()
+  @IsOptional()
+  accountName: string;
+
+  @IsEmail()
+  @IsOptional()
+  email: string;
+
+  @IsString()
+  @IsOptional()
+  tel: string;
+
+  @IsString()
+  @IsOptional()
+  remark: string;
+
+  @IsString()
+  @Length(14, 14)
+  @IsOptional()
+  endDatetime: string;
+
+  @IsString()
+  @Length(14, 14)
+  @IsOptional()
+  beginDatetime: string;
+
   @IsNotEmpty()
   updateWhereOptions: UpdateWhereOptions;
 }
+
+
+
 export class CreateAccountDto extends Account {}
-export class UpdateAccountDto extends PartialType(Account) {}
+
+// update entity dto 는 형태를 고정할 수 없으므로 필요없다.
+// export class UpdateAccountDto extends PartialType(Account) {}
