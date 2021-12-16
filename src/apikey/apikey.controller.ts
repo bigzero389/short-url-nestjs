@@ -1,15 +1,16 @@
-import { Body, Controller, Get, Logger, Param, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Req } from '@nestjs/common';
 import { LikeType, ObjUtil } from '../shared/util/objUtil';
 import { from, Observable } from 'rxjs';
 import { ResultDto } from '../shared/result.dto';
 import { map } from 'rxjs/operators';
 import { ResultCode } from '../shared/result-code';
 import { ResultMsg } from '../shared/result-msg';
-import { CreateApikeyDto, PostApikeyDto } from './apikey.dto';
+import { CreateApikeyDto, PostApikeyDto, PutApikeyDto } from './apikey.dto';
 import { ApikeyService } from './apikey.service';
 import * as Hash from 'object-hash';
 import { Account } from '../account/account.entity';
 import { Apikey } from './apikey.entity';
+import { PutAccountDto } from '../account/account.dto';
 
 @Controller('apikey')
 export class ApikeyController {
@@ -52,20 +53,62 @@ export class ApikeyController {
 
   @Get()
   get(@Req() req): Observable<Apikey[]> {
-    const targetObj = req.query;
-    const conditionMap = new Map<string, LikeType>([
-      ['apikey', LikeType.NOT],
-      ['accountName', LikeType.ALL],
-    ]);
-    // @TODO : conditions 생성을 service 에서 하고 controller 에서는 conditionMap 만 넘겨줘야 될듯...
-    const conditions = ObjUtil.condition(conditionMap, targetObj);
-    ApikeyController.LOGGER.debug('conditions: ' + JSON.stringify(conditions));
+    const getQueryParam = req.query;
+    ApikeyController.LOGGER.debug('get param: ' + JSON.stringify(getQueryParam));
 
-    const apikeyList = from(this.apikeyService.get(conditions));
+    const apikeyList = from(this.apikeyService.get(getQueryParam));
     return apikeyList.pipe(
       map((result) => {
         ApikeyController.LOGGER.debug('get: ' + JSON.stringify(result));
         return result;
+      }),
+    );
+  }
+
+  @Delete(':apikey')
+  deleteOne(@Param() params): Observable<ResultDto> {
+    const resultDto = new ResultDto();
+    const result = from(this.apikeyService.deleteOne(params.apikey));
+    return result.pipe(
+      map((result) => {
+        ApikeyController.LOGGER.debug('deleteOne result: ' + JSON.stringify(result));
+        if (result.affected != undefined) {
+          resultDto.isSuccess = true;
+          resultDto.resultCnt = result.affected;
+          resultDto.resultMsg = 'deleted record count is ' + result.affected;
+          return resultDto;
+        } else {
+          resultDto.isSuccess = false;
+          resultDto.resultCode = ResultCode.E500;
+          resultDto.resultMsg = ResultMsg.getResultMsg(ResultCode.E500);
+          return resultDto;
+        }
+      }),
+    );
+  }
+
+  @Put()
+  update(@Body() putApikeyDto: PutApikeyDto): Observable<ResultDto> {
+    ApikeyController.LOGGER.debug( 'update putApikeyDto: ' + JSON.stringify(putApikeyDto), );
+
+    const result = from( this.apikeyService.update(putApikeyDto), );
+    const resultDto = new ResultDto();
+    return result.pipe(
+      map((result) => {
+        ApikeyController.LOGGER.debug(
+          'update result: ' + JSON.stringify(result),
+        );
+        if (result.affected != undefined) {
+          resultDto.resultCnt = result.affected;
+          resultDto.isSuccess = true;
+          resultDto.resultMsg = 'updated record count is ' + result.affected;
+          return resultDto;
+        } else {
+          resultDto.isSuccess = false;
+          resultDto.resultCode = ResultCode.E500;
+          resultDto.resultMsg = ResultMsg.getResultMsg(ResultCode.E500);
+          return resultDto;
+        }
       }),
     );
   }

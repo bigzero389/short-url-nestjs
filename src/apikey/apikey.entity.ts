@@ -14,7 +14,7 @@ export class Apikey {
 
   @ManyToOne(() => Account, (account) => account.apikeys, { nullable: false })
   @JoinColumn({ name: 'account_id' })
-  account_id: string;
+  account_id: any;
   // account: Account;
 
   @Column({

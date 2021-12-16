@@ -37,7 +37,6 @@ export class AccountService {
   }
 
   async get(getQueryParams: any): Promise<Account[]> {
-
     // select where 절 구조 정의.
     const conditionMap = new Map<string, LikeType>([
       ['accountId', LikeType.NOT],

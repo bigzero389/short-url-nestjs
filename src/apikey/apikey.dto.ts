@@ -22,4 +22,37 @@ export class PostApikeyDto {
   apikey: string;
 }
 
+class UpdateWhereOptions {
+  @IsString()
+  @IsOptional()
+  apikey: string;
+
+  @IsString()
+  @IsOptional()
+  accountId: string;
+}
+
+export class PutApikeyDto {
+  @IsString()
+  @IsOptional()
+  accountId: string;
+
+  @IsString()
+  @Length(14, 14)
+  @IsOptional()
+  endDatetime: string;
+
+  @IsString()
+  @Length(14, 14)
+  @IsOptional()
+  beginDatetime: string;
+
+  @IsString()
+  @IsOptional()
+  apikey: string;
+
+  @IsOptional()
+  updateWhereOptions: UpdateWhereOptions;
+}
+
 export class CreateApikeyDto extends Apikey {}

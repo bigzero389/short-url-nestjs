@@ -1,11 +1,4 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  Length,
-} from 'class-validator';
-import { PartialType } from '@nestjs/swagger';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, Length, } from 'class-validator';
 import { Account } from './account.entity';
 
 export class PostAccountDto {
