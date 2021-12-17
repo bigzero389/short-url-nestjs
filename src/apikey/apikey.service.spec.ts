@@ -23,8 +23,9 @@ const mockApikeyRepository = () => ({
     where: jest.fn().mockReturnThis(),
     andWhere: jest.fn().mockReturnThis(),
     getMany: jest.fn().mockReturnThis(),
-    // then: jest.fn().mockReturnThis(),
-    // catch: jest.fn(),
+    update: jest.fn().mockReturnThis(),
+    set: jest.fn().mockReturnThis(),
+    execute: jest.fn().mockReturnThis(),
   }),
 });
 
@@ -125,29 +126,36 @@ describe('ApikeyService', () => {
     it('update', async () => {
       const updateResult = new UpdateResult();
       updateResult.affected = 1;
-      mockRepository.update.mockResolvedValue(updateResult);
-      const testData = JSON.stringify({
+      mockRepository
+        .createQueryBuilder()
+        .execute.mockResolvedValue(updateResult);
+      const putDto = JSON.stringify({
         accountId: 'updatedAccountId',
         apikey: 'updatedApikey',
         updateWhereOptions: {
           accountId: 'bigzero1',
         },
       });
-      const result = await service.update(JSON.parse(testData));
+      const result = await service.update(JSON.parse(putDto));
       expect(result.affected).toEqual(1);
     });
 
     it('update fail', async () => {
       const updateResult = new UpdateResult();
-      mockRepository.update.mockResolvedValue(updateResult);
-      const testData = JSON.stringify({
+      mockRepository
+        .createQueryBuilder()
+        .execute.mockResolvedValue(updateResult);
+      const putDto = JSON.stringify({
         accountId: 'accountId',
         updateWhereOptions: {
           apikey: 'isNotExist',
         },
       });
-      const result = await service.update(JSON.parse(testData));
+      const result = await service.update(JSON.parse(putDto));
       expect(result.affected).toEqual(undefined);
     });
   });
 });
+
+// createBuilder testing
+// https://velog.io/@hkja0111/NestJS-11-Unit-Test-QueryBuilder
