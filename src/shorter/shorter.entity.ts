@@ -1,5 +1,7 @@
-import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { IsNotEmpty, Length } from 'class-validator';
+import { Account } from '../account/account.entity';
+import { Apikey } from '../apikey/apikey.entity';
 
 @Entity('shorter')
 export class Shorter {
@@ -12,12 +14,8 @@ export class Shorter {
   @Index({ unique: true })
   short_url: string;
 
-  @Column({
-    type: 'varchar',
-    length: 50,
-    nullable: false,
-  })
-  @IsNotEmpty()
+  @ManyToOne(() => Apikey, (parent) => parent.shorters, { nullable: false })
+  @JoinColumn({ name: 'apikey', referencedColumnName: 'apikey' })
   apikey: string;
 
   @Column({

@@ -1,6 +1,8 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { Account } from '../account/account.entity';
 import { IsNotEmpty, Length } from 'class-validator';
+import { ForeignKeyMetadata } from 'typeorm/metadata/ForeignKeyMetadata';
+import { Shorter } from '../shorter/shorter.entity';
 
 @Entity('apikey')
 export class Apikey {
@@ -13,7 +15,7 @@ export class Apikey {
   apikey: string;
 
   @ManyToOne(() => Account, (account) => account.apikeys, { nullable: false })
-  @JoinColumn({ name: 'account_id' })
+  @JoinColumn({ name: 'account_id', referencedColumnName: 'account_id' })
   account_id: any;
   // account: Account;
 
@@ -34,4 +36,6 @@ export class Apikey {
   })
   @Length(14, 14)
   begin_datetime: string;
+
+  shorters: Shorter[];
 }
