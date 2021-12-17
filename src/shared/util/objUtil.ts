@@ -36,7 +36,7 @@ export class ObjUtil {
   }
 
   // TypeORM where 절 생성기
-  public static condition(keys: Map<string, LikeType>, target: any): any {
+  public static condition(keys: Map<string, LikeType>, target: any): FindConditions<any> {
     // let conditions = {};
     // if (req.query['accountId']) {
     //   conditions = { ...conditions, account_id: req.query.accountId };
