@@ -70,4 +70,10 @@ export class DateUtil {
 
     return true;
   }
+
+  public static yyyyMMddHHmissKOR() {
+    const today = new Date(); // UTC
+    today.setHours(today.getHours() + 9); // UTC +9hr => korea
+    return today.toISOString().replace('T', ' ').substring(0, 19);  // 문자열 및 밀리세컨 제거
+  }
 }

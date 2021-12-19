@@ -1,17 +1,21 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { IsNotEmpty, Length } from 'class-validator';
-import { Account } from '../account/account.entity';
 import { Apikey } from '../apikey/apikey.entity';
 
 @Entity('shorter')
+@Index('IDX_SHORTER_01', ['end_datetime', 'short_url', 'begin_datetime'], { unique: true })
+@Index('IDX_SHORTER_02', ['short_url'], { unique: false })
+@Index('IDX_SHORTER_03', ['apikey'], { unique: false })
 export class Shorter {
-  @PrimaryColumn({
+  @PrimaryGeneratedColumn()
+  short_url_id: number;
+
+  // 종료일시가 지난 short url 은 재사용 가능하다
+  @Column({
     type: 'varchar',
     length: 100,
-    unique: true,
     nullable: false,
   })
-  @Index({ unique: true })
   short_url: string;
 
   @ManyToOne(() => Apikey, (parent) => parent.shorters, { nullable: false })
@@ -45,4 +49,12 @@ export class Shorter {
   @IsNotEmpty()
   @Length(14, 14)
   begin_datetime: string;
+
+  @Column({
+    type: 'int4',
+    nullable: false,
+    default: 0,
+  })
+  @IsNotEmpty()
+  short_url_cnt: number = 0;
 }
