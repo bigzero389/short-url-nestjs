@@ -124,10 +124,7 @@ export class ShorterController {
     }
 
     const resultDto: ResultDto = new ResultDto();
-    // TODO : config 처리 필요.
-    const config_url = 'http://localhost:3000';
-    // TODO : short url 생성. 7자리로 변환 필요
-    postDto.shortUrl = config_url + '/' + Hash({ origin_url: postDto.originUrl, time: new Date(), });
+    postDto.shortUrl = this.makeShortUrl(postDto.originUrl);
     const shortUrlEntity = from(this.shorterService.create(postDto));
     return shortUrlEntity.pipe(
       map((shorter) => {
@@ -141,5 +138,13 @@ export class ShorterController {
         }
       }),
     );
+  }
+
+  makeShortUrl(originUrl: string) {
+    // TODO : config 처리 필요.
+    const config_url = 'http://localhost:3000';
+    // TODO : short url 생성. 7자리로 변환 필요
+    const result = config_url + '/' + Hash({ origin_url: originUrl, time: new Date(), });
+    return result;
   }
 }
