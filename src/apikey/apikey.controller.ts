@@ -8,9 +8,7 @@ import { ResultMsg } from '../shared/result-msg';
 import { CreateApikeyDto, PostApikeyDto, PutApikeyDto } from './apikey.dto';
 import { ApikeyService } from './apikey.service';
 import * as Hash from 'object-hash';
-import { Account } from '../account/account.entity';
 import { Apikey } from './apikey.entity';
-import { PutAccountDto } from '../account/account.dto';
 
 @Controller('apikey')
 export class ApikeyController {

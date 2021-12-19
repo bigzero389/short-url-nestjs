@@ -51,7 +51,7 @@ export class PutApikeyDto {
   @IsOptional()
   apikey: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   updateWhereOptions: UpdateWhereOptions;
 }
 
