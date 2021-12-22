@@ -40,7 +40,7 @@
 * git clone https://github.com/largezero/ShortURL.git
 ### yarn installation
 * yarn global add @nestjs/cli
-* yarn add @nestjs/config @nestjs/typeorm pg object-hash
+* yarn add @nestjs/config @nestjs/typeorm pg object-hash cache-manager cache-manager-ioredis
 * yarn install
 * yarn start // default port 3000
 

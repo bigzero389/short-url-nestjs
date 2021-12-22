@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString, Length } from 'class-validator';
 import { Shorter } from './shorter.entity';
 
@@ -32,6 +32,9 @@ export class PostShorterDto {
 
   @IsNumber({allowNaN: false})
   shortUrlCnt: number = 0;
+
+  @IsOptional()
+  shorterKey: string;
 }
 
 class UpdateWhereOptions {
@@ -69,4 +72,6 @@ export class PutShorterDto {
   updateWhereOptions: UpdateWhereOptions;
 }
 
-export class CreateShorterDto extends Shorter{}
+export class CreateShorterDto extends PartialType(Shorter){
+  shorter_key: string;
+};

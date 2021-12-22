@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Headers, Req, Logger } from '@nestjs/common';
+import { Body, Controller, Get, Post, Headers, Req, Logger, Inject, CACHE_MANAGER, Query } from '@nestjs/common';
 import { ShorterService } from './shorter.service';
 import { PutShorterDto, PostShorterDto } from './shorter.dto';
 import { catchError, from, Observable, of, throwError } from 'rxjs';
@@ -8,19 +8,20 @@ import { ResultMsg } from '../shared/result-msg';
 import { ResultCode } from '../shared/result-code';
 import { map } from 'rxjs/operators';
 import { DeleteResult, UpdateResult } from 'typeorm';
-import { Apikey } from '../apikey/apikey.entity';
 import { Shorter } from './shorter.entity';
-import * as Hash from 'object-hash'
-
+import * as Hash from 'object-hash';
 
 @Controller('shorter')
 export class ShorterController {
   private static readonly LOGGER = new Logger(ShorterController.name);
   constructor(private readonly shorterService: ShorterService) {}
 
-  @Get('hello')
-  getHello(): string {
-    return 'Hello bigzero short url world';
+  @Get('/cache')
+  async getCacheTime(@Query('id') id: string): Promise<string> {
+    const savedTime = await this.shorterService.getCacheTime(id);
+    if (savedTime) {
+      return savedTime;
+    }
   }
 
   @Get()
@@ -124,7 +125,10 @@ export class ShorterController {
     }
 
     const resultDto: ResultDto = new ResultDto();
-    postDto.shortUrl = this.makeShortUrl(postDto.originUrl);
+    // TODO : config 처리 필요.
+    const config_url = 'http://localhost:3000';
+    postDto.shorterKey = this.makeShorterKey(postDto.originUrl);
+    postDto.shortUrl = config_url + postDto.shorterKey;
     const shortUrlEntity = from(this.shorterService.create(postDto));
     return shortUrlEntity.pipe(
       map((shorter) => {
@@ -140,11 +144,9 @@ export class ShorterController {
     );
   }
 
-  makeShortUrl(originUrl: string) {
-    // TODO : config 처리 필요.
-    const config_url = 'http://localhost:3000';
+  makeShorterKey(originUrl: string) {
     // TODO : short url 생성. 7자리로 변환 필요
-    const result = config_url + '/' + Hash({ origin_url: originUrl, time: new Date(), });
+    const result = Hash({ origin_url: originUrl, time: new Date(), });
     return result;
   }
 }

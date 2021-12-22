@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, Logger, Query } from '@nestjs/common';
 import { CreateShorterDto, PostShorterDto } from './shorter.dto';
 import { Shorter } from './shorter.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { CreateApikeyDto } from '../apikey/apikey.dto';
 import { ObjUtil } from '../shared/util/objUtil';
 import { Apikey } from '../apikey/apikey.entity';
 import { DateUtil } from '../shared/util/dateUtil';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ShorterService {
@@ -14,7 +15,18 @@ export class ShorterService {
 
   constructor(
     @InjectRepository(Shorter) private shorterRepository: Repository<Shorter>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache, // Cache 는 cache-manager 로 부터 import 해야 한다.
   ) {}
+
+  async getCacheTime(id: string): Promise<string> {
+    const savedTime = await this.cacheManager.get(id);
+    if (savedTime) {
+      return 'saved time : ' + savedTime;
+    }
+    const now = new Date().getTime();
+    await this.cacheManager.set(id, now, { ttl: 600 }); // 10 min
+    return 'save new time : ' + now;
+  }
 
   async create(postDto: PostShorterDto): Promise<Shorter> {
     const createShorterDto: CreateShorterDto = new CreateShorterDto();
@@ -27,6 +39,13 @@ export class ShorterService {
         ShorterService.LOGGER.error('create: ' + err);
         return new Shorter();
       });
+
+    const cacheResult = await this.cacheManager.set(
+      createShorterDto.shorter_key,
+      createShorterDto,
+      { ttl: 600 },
+    ); // 10 min
+
     return createdData;
   }
 
