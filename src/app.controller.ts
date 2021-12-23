@@ -1,9 +1,13 @@
 import { CACHE_MANAGER, Controller, Get, Inject } from '@nestjs/common';
 import { AppService } from './app.service';
+import { ConfigService } from '@nestjs/config';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Get()
   get(): string {
@@ -18,5 +22,10 @@ export class AppController {
   @Get('health')
   getHealth(): string {
     return 'ok';
+  }
+
+  @Get('redis')
+  getRedis(): string {
+    return this.configService.get<string>('REDIS_HOST');
   }
 }

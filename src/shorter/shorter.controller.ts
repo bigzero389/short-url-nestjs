@@ -9,7 +9,6 @@ import { ResultCode } from '../shared/result-code';
 import { map } from 'rxjs/operators';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { Shorter } from './shorter.entity';
-import * as Hash from 'object-hash';
 
 @Controller('shorter')
 export class ShorterController {
@@ -127,7 +126,7 @@ export class ShorterController {
     const resultDto: ResultDto = new ResultDto();
     // TODO : config 처리 필요.
     const config_url = 'http://localhost:3000';
-    postDto.shorterKey = this.makeShorterKey(postDto.originUrl);
+    postDto.shorterKey = this.shorterService.makeShorterKey(postDto.originUrl);
     postDto.shortUrl = config_url + postDto.shorterKey;
     const shortUrlEntity = from(this.shorterService.create(postDto));
     return shortUrlEntity.pipe(
@@ -142,11 +141,5 @@ export class ShorterController {
         }
       }),
     );
-  }
-
-  makeShorterKey(originUrl: string) {
-    // TODO : short url 생성. 7자리로 변환 필요
-    const result = Hash({ origin_url: originUrl, time: new Date(), });
-    return result;
   }
 }

@@ -3,11 +3,10 @@ import { CreateShorterDto, PostShorterDto } from './shorter.dto';
 import { Shorter } from './shorter.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateApikeyDto } from '../apikey/apikey.dto';
 import { ObjUtil } from '../shared/util/objUtil';
-import { Apikey } from '../apikey/apikey.entity';
 import { DateUtil } from '../shared/util/dateUtil';
 import { Cache } from 'cache-manager';
+import * as Hash from 'object-hash';
 
 @Injectable()
 export class ShorterService {
@@ -40,6 +39,7 @@ export class ShorterService {
         return new Shorter();
       });
 
+    // redis 처리.
     const cacheResult = await this.cacheManager.set(
       createShorterDto.shorter_key,
       createShorterDto,
@@ -91,5 +91,11 @@ export class ShorterService {
       });
 
     return shorterList;
+  }
+
+  makeShorterKey(originUrl: string) {
+    // TODO : short url 생성. 7자리로 변환 필요
+    const result = Hash({ origin_url: originUrl, time: new Date(), });
+    return result;
   }
 }
