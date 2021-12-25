@@ -2,11 +2,12 @@ import { CACHE_MANAGER, Inject, Injectable, Logger, Query } from '@nestjs/common
 import { CreateShorterDto, PostShorterDto } from './shorter.dto';
 import { Shorter } from './shorter.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, FindConditions, Repository } from 'typeorm';
 import { ObjUtil } from '../shared/util/objUtil';
 import { DateUtil } from '../shared/util/dateUtil';
 import { Cache } from 'cache-manager';
 import * as Hash from 'object-hash';
+import { Apikey } from '../apikey/apikey.entity';
 
 @Injectable()
 export class ShorterService {
@@ -47,6 +48,20 @@ export class ShorterService {
     ); // 10 min
 
     return createdData;
+  }
+
+  async getOne(shortUrlId: number): Promise<Shorter> {
+    const result = await this.shorterRepository
+      .findOne({
+        where: { short_url_id: shortUrlId },
+        cache: false,
+      })
+      .then((result) => result)
+      .catch((err) => {
+        ShorterService.LOGGER.error('getOne: ' + err);
+        return new Shorter();
+      });
+    return result;
   }
 
   async get(getQueryParams, isUseYN?: boolean): Promise<Shorter[]> {
@@ -91,6 +106,19 @@ export class ShorterService {
       });
 
     return shorterList;
+  }
+
+  async deleteOne(shortUrlId: number): Promise<DeleteResult> {
+    const conditions: FindConditions<Shorter> = { short_url_id: shortUrlId };
+    return await this.shorterRepository
+      .delete(conditions)
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        ShorterService.LOGGER.error('deleteOne: ' + err);
+        return new DeleteResult();
+      });
   }
 
   makeShorterKey(originUrl: string) {

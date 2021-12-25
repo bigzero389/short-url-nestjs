@@ -4,9 +4,7 @@ import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { CreateApikeyDto, PostApikeyDto } from './apikey.dto';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Apikey } from './apikey.entity';
-import { CreateAccountDto } from '../account/account.dto';
 import { NotFoundException } from '@nestjs/common';
-import { Account } from '../account/account.entity';
 
 // Service 의 Repository Injection을 Mocking 하기 위해 필요함.
 const mockApikeyRepository = () => ({
