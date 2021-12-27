@@ -11,13 +11,13 @@ export class AppController {
 
   @Get()
   get(): string {
-    return this.appService.getHello();
+    return this.appService.get();
   }
 
-  @Get('hello')
-  getHello(): string {
-    return 'Hello bigzero short url world';
-  }
+  // @Get('hello')
+  // getHello(): string {
+  //   return 'Hello bigzero short url world';
+  // }
 
   @Get('health')
   getHealth(): string {
@@ -26,6 +26,11 @@ export class AppController {
 
   @Get('redis')
   getRedis(): string {
-    return this.configService.get<string>('REDIS_HOST');
+    const redisOk = this.configService.get<string>('REDIS_HOST');
+    if (redisOk) {
+      return 'ok';
+    } else {
+      return 'not ok';
+    }
   }
 }
