@@ -5,17 +5,17 @@
 * 사용자계정(account)을 관리를 한다.
 * 계정별 apikey 를 관리한다. 한개의 계정은 여러개의 apikey 를 가질수 있다.(1대다 관계)
 * 1개의 apikey 는 여러개의 short url 을 가진다. (1대다 관계)
-* 모든 정보는 DB에서 관리한다.
-* short url 에 대한 처리는 속도를 위해서 redis 를 cache로 사용한다.
+* 모든 정보는 DB 에서 관리한다.
+* short url 에 대한 처리는 속도를 위해서 redis 를 cache 로 사용한다.
 
 ### To-Do
-* (진행중) 기초적인 CRUD 가 아닌 실제 현업에서 사용 가능한 수준의 Data Handling 예제
-* (진행중) DBMS 에 종속되지 않는 ORM 도구의 실질적 사용
-* (진행중) 라이브러리 최소화 및 검증된 라이브러리 사용을 통한 지속적 유지보수성
+* (개발완료) 기초적인 CRUD 가 아닌 실제 현업에서 사용 가능한 수준의 Data Handling 예제
+* (개발완료) 실질적인 Test Case 예제 구현
+* (개발완료) DBMS 에 종속되지 않는 ORM 도구의 실질적 사용
+* (개발완료) 라이브러리 최소화 및 검증된 라이브러리 사용을 통한 지속적 유지보수성
 * (진행중) 각각의 Layer 별 일관된 에러처리 및 보안을 위한 최소한의 메시지처리
 * (진행중) 타 시스템과의 연계를 고려한 인터페이스 표준화 및 Validation 처리
 * (진행전) OS, Docker 등 제반 인프라 환경에 종속적이지 않은 Application 환경 독립성 제공
-* (진행중) 실질적인 Test Case 예제 구현
 
 ### Module
 * shared : common, util
@@ -29,12 +29,15 @@
 * using brew : brew install yarn
 * using windows installer : https://classic.yarnpkg.com/en/docs/install#windows-stable
 ### middleware : nodejs 
-* v16.x - LTS
-* nvm install v16.x
-* nvm use v16.x
+* nvm ls-remote --lts v16.x // node LTS version 조회
+* nvm install v16.13.1  // node v16.13.1 설치.
+* nvm use v16.x  // node version 이 여러개 인 경우 선택
 ### database : postgres
 * docker run -d -p 15432:5432 --name postgres -e POSTGRES_PASSWORD=nest1234 -v pgdata:/var/lib/postgresql/data postgres
- 
+### cache : redis 
+* docker volume create --name redis_data
+* docker run --name redis-svr -d -p 6379:6379 -v redis_data:/data redis redis-server --appendonly yes
+
 ## Runtime settings
 ### git clone
 * git clone https://github.com/largezero/ShortURL.git
