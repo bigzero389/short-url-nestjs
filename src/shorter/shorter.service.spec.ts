@@ -70,7 +70,7 @@ describe('ShorterService', () => {
         },
         {
           provide: CACHE_MANAGER,
-          useValue: { set: jest.fn() },
+          useValue: { set: jest.fn(), get: jest.fn() },
         },
       ],
     }).compile();
@@ -127,6 +127,13 @@ describe('ShorterService', () => {
     });
   });
 
+  describe('redisKey', () => {
+    it('makeNewKey', async () => {
+      const originUrl = 'http://bcheck.hist-tech.net';
+      const result = await service.makeShorterKey(originUrl);
+      expect(result.length).toBe(7);
+    });
+  });
   // describe('update', () => {
   //   it('update', async () => {
   //     const updateResult = new UpdateResult();

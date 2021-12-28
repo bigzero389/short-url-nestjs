@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Post, Headers, Req, Logger, Inject, CACHE_MANAGER, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Headers,
+  Req,
+  Logger,
+  Inject,
+  CACHE_MANAGER,
+  Query,
+} from '@nestjs/common';
 import { ShorterService } from './shorter.service';
 import { PutShorterDto, PostShorterDto } from './shorter.dto';
 import { catchError, from, Observable, of, throwError } from 'rxjs';
@@ -26,7 +37,9 @@ export class ShorterController {
   @Get()
   get(@Req() req): Observable<Shorter[]> {
     const getQueryParam = req.query;
-    ShorterController.LOGGER.debug('get param: ' + JSON.stringify(getQueryParam));
+    ShorterController.LOGGER.debug(
+      'get param: ' + JSON.stringify(getQueryParam),
+    );
 
     const shorterList = from(this.shorterService.get(getQueryParam));
     return shorterList.pipe(
@@ -126,19 +139,29 @@ export class ShorterController {
     const resultDto: ResultDto = new ResultDto();
     // TODO : config 처리 필요.
     const config_url = 'http://localhost:3000';
-    postDto.shorterKey = this.shorterService.makeShorterKey(postDto.originUrl);
-    postDto.shortUrl = config_url + postDto.shorterKey;
-    const shortUrlEntity = from(this.shorterService.create(postDto));
-    return shortUrlEntity.pipe(
-      map((shorter) => {
-        if (shorter && shorter.short_url) {
-          return { shorter, ...resultDto, isSuccess: true };
-        } else {
-          resultDto.isSuccess = false;
-          resultDto.resultCode = ResultCode.E500;
-          resultDto.resultMsg = ResultMsg.getResultMsg(ResultCode.E500);
-          return { shorter, ...resultDto };
-        }
+    /* postDto.shorterKey = this.shorterService.makeTestShorterKey(postDto.originUrl); */
+    // 중복되지 않은 redisKey 를 가져온다.
+    const value = from( this.shorterService.makeShorterKey(postDto.originUrl), );
+    return value.pipe(
+      // redisKey를 이용하여 postDto 의 값을 채운다. shorterKey, shortUrl
+      map((redisKey) => {
+        postDto.shorterKey = redisKey;
+        postDto.shortUrl = config_url + postDto.shorterKey;
+        return postDto;
+      }),
+      // 완성된 postDto를 이용하여 DB와 redis 에 값을 넣는다.
+      map((postDto) => {
+        ShorterController.LOGGER.debug(`postDto : ${JSON.stringify(postDto)}`);
+        return this.shorterService.create(postDto).then((shorter) => {
+          if (shorter && shorter.short_url) {
+            return { shorter, ...resultDto, isSuccess: true };
+          } else {
+            resultDto.isSuccess = false;
+            resultDto.resultCode = ResultCode.E500;
+            resultDto.resultMsg = ResultMsg.getResultMsg(ResultCode.E500);
+            return { shorter, ...resultDto };
+          }
+        });
       }),
     );
   }

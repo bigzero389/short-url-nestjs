@@ -1,4 +1,4 @@
-import { CACHE_MANAGER, Inject, Injectable, Logger, Query } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable, Logger, Query, } from '@nestjs/common';
 import { CreateShorterDto, PostShorterDto } from './shorter.dto';
 import { Shorter } from './shorter.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,7 +7,6 @@ import { ObjUtil } from '../shared/util/objUtil';
 import { DateUtil } from '../shared/util/dateUtil';
 import { Cache } from 'cache-manager';
 import * as Hash from 'object-hash';
-import { Apikey } from '../apikey/apikey.entity';
 
 @Injectable()
 export class ShorterService {
@@ -33,7 +32,7 @@ export class ShorterService {
     Object.assign(createShorterDto, ObjUtil.camelCaseKeysToUnderscore(postDto));
 
     const createdData = await this.shorterRepository
-      .save({ ...createShorterDto, })
+      .save({ ...createShorterDto })
       .then((result) => result)
       .catch((err) => {
         ShorterService.LOGGER.error('create: ' + err);
@@ -41,6 +40,7 @@ export class ShorterService {
       });
 
     // redis 처리.
+    // TODO : ttl 을 expire time 으로 연산해서 넣어야 한다.
     const cacheResult = await this.cacheManager.set(
       createShorterDto.shorter_key,
       createShorterDto,
@@ -78,20 +78,32 @@ export class ShorterService {
       ]);
     query.where('1 = 1');
     if (getQueryParams.shortUrl) {
-      query.andWhere('shorter.short_url = :short_url', { short_url: `${getQueryParams.shortUrl}` })
+      query.andWhere('shorter.short_url = :short_url', {
+        short_url: `${getQueryParams.shortUrl}`,
+      });
     }
     if (getQueryParams.originUrl) {
-      query.andWhere('shorter.origin_url = :origin_url', { origin_url: `${getQueryParams.originUrl}` })
+      query.andWhere('shorter.origin_url = :origin_url', {
+        origin_url: `${getQueryParams.originUrl}`,
+      });
     }
     if (getQueryParams.apikey) {
-      query.andWhere('apikey.apikey = :apikey', { apikey: `${getQueryParams.apikey}` })
+      query.andWhere('apikey.apikey = :apikey', {
+        apikey: `${getQueryParams.apikey}`,
+      });
     }
     if (getQueryParams.accountId) {
-      query.andWhere('apikey.account_id = :account_id', { account_id: `${getQueryParams.accountId}` })
+      query.andWhere('apikey.account_id = :account_id', {
+        account_id: `${getQueryParams.accountId}`,
+      });
     }
     if (isUseYN) {
-      query.andWhere('shorter.begin_datetime <= :current_datetime', { current_datetime: DateUtil.yyyyMMddHHmissKOR() })
-      query.andWhere('shorter.end_datetime >= :current_datetime', { current_datetime: DateUtil.yyyyMMddHHmissKOR() })
+      query.andWhere('shorter.begin_datetime <= :current_datetime', {
+        current_datetime: DateUtil.yyyyMMddHHmissKOR(),
+      });
+      query.andWhere('shorter.end_datetime >= :current_datetime', {
+        current_datetime: DateUtil.yyyyMMddHHmissKOR(),
+      });
     }
 
     const shorterList = await query
@@ -121,7 +133,34 @@ export class ShorterService {
       });
   }
 
-  makeShorterKey(originUrl: string) {
+  // redis 에 key가 이미 존재하는지 체크해서 있으면 재시도, 없으면 redisKey 리턴, 단, 10번해서도 계속 중복존재하면 null 리턴.
+  async makeShorterKey(originUrl: string): Promise<string> {
+    // redis 반복체크 함수정의.
+    const dupCheck = async (redisKey) => {
+      let result = null;
+      for (let i = 0; i < 10; i++) {
+        result = await this.cacheManager.get(redisKey);
+        if (result) {
+          redisKey = this.getHashKey(originUrl);
+        } else {
+          break;
+        }
+        ShorterService.LOGGER.debug( `dupCheck : result = ${result} , redisKey = ${redisKey}`, );
+      }
+      return result ? null : redisKey;
+    };
+
+    const firstRedisKey = this.getHashKey(originUrl);
+    // 반복체크 함수의 결과값 리턴.
+    return await dupCheck(firstRedisKey).then((result) => result);
+  }
+
+  // 해쉬키의 길이를 줄이기 위해 Hash 함수로 생성된 해쉬키를 7자리로 자른다. 자릿수를 줄일수록 중복확률이 커진다.
+  getHashKey(originUrl): string {
+    return Hash({ origin_url: originUrl, time: new Date().getSeconds() + Math.random() * 1000, }).substring(0, 7);
+  }
+
+  makeTestShorterKey(originUrl: string) {
     // TODO : short url 생성. 7자리로 변환 필요
     const result = Hash({ origin_url: originUrl, time: new Date(), });
     return result;
