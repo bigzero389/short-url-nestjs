@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Headers,
-  Req,
-  Logger,
-  Inject,
-  CACHE_MANAGER,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Headers, Req, Logger, Inject, CACHE_MANAGER, Query, } from '@nestjs/common';
 import { ShorterService } from './shorter.service';
 import { PutShorterDto, PostShorterDto } from './shorter.dto';
 import { catchError, from, Observable, of, throwError } from 'rxjs';
@@ -20,11 +9,15 @@ import { ResultCode } from '../shared/result-code';
 import { map } from 'rxjs/operators';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { Shorter } from './shorter.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('shorter')
 export class ShorterController {
   private static readonly LOGGER = new Logger(ShorterController.name);
-  constructor(private readonly shorterService: ShorterService) {}
+  constructor(
+    private readonly shorterService: ShorterService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Get('/cache')
   async getCacheTime(@Query('id') id: string): Promise<string> {
@@ -137,8 +130,7 @@ export class ShorterController {
     }
 
     const resultDto: ResultDto = new ResultDto();
-    // TODO : config 처리 필요.
-    const config_url = 'http://localhost:3000';
+    const config_url = `${this.configService.get<string>('HTTP_SCHEMA')}://${this.configService.get<string>('SHORTER_URL')}:${this.configService.get<string>('SHORTER_PORT')}`;
     /* postDto.shorterKey = this.shorterService.makeTestShorterKey(postDto.originUrl); */
     // 중복되지 않은 redisKey 를 가져온다.
     const value = from( this.shorterService.makeShorterKey(postDto.originUrl), );
@@ -146,7 +138,7 @@ export class ShorterController {
       // redisKey를 이용하여 postDto 의 값을 채운다. shorterKey, shortUrl
       map((redisKey) => {
         postDto.shorterKey = redisKey;
-        postDto.shortUrl = config_url + postDto.shorterKey;
+        postDto.shortUrl = config_url + '/' + postDto.shorterKey;
         return postDto;
       }),
       // 완성된 postDto를 이용하여 DB와 redis 에 값을 넣는다.
