@@ -44,7 +44,6 @@ export class Shorter {
     type: 'varchar',
     nullable: false,
     length: 14,
-    default: '20210101000000',
   })
   @IsNotEmpty()
   @Length(14, 14)

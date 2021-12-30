@@ -9,8 +9,8 @@ export class PostShorterDto {
   shortUrlId: string;
 
   @ApiProperty({ description: 'short url 정보' })
-  @IsString()
   @IsOptional()
+  @IsString()
   shortUrl: string;
 
   @ApiProperty({ description: 'short url의 apikey' })
@@ -18,15 +18,17 @@ export class PostShorterDto {
   apikey: string;
 
   @ApiProperty({ description: 'short url로 변경할 target url(origin url), short url 호출시 origin url로 redirect 된다.' })
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   originUrl: string;
 
   @ApiProperty({ description: '서비스종료일시(yyyyMMddHH24miss)' })
+  @IsNotEmpty()
   @Length(14,14)
   endDatetime: string;
 
   @ApiProperty({ description: '서비스종료일시(yyyyMMddHH24miss)' })
+  @IsOptional()
   @Length(14,14)
   beginDatetime: string;
 
@@ -38,8 +40,8 @@ export class PostShorterDto {
 }
 
 class UpdateWhereOptions {
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   shortUrlId: string;
 }
 
@@ -57,8 +59,8 @@ export class PutShorterDto {
   apikey: string;
 
   @ApiProperty({ description: 'short url로 변경할 target url(origin url), short url 호출시 origin url로 redirect 된다.' })
-  @IsString()
   @IsNotEmpty()
+  @IsString()
   originUrl: string;
 
   @ApiProperty({ description: '서비스종료일시(yyyyMMddHH24miss)' })

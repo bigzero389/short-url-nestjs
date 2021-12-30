@@ -57,7 +57,6 @@ describe('AccountService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       providers: [
-        // @TODO : jest에서 nestjs DI 지원안되는 상황 방법확인 필요
         // - 실제 DB를 이용한 jest test를 하려면 Repository 가 DI가 되어야 하는데 jest에서 Nestjs의 DI되지 않아서 못함
         // - MockRepository를 사용해서 Test Case를 만들었는데 서비스에 많은 비즈니스 로직이 없는 상황에서는 Service의 Test Case 효용성이 떨어짐. Controller Test Case 위주로 작성하는 것이 효율적일 듯 함
         // AccountService, { provide: getRepositoryToken(Account), useClass: Repository }, // DI가 정상적으로 작동하는 경우 이렇게 해야 된다.

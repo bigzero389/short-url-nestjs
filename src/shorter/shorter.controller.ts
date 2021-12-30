@@ -89,8 +89,6 @@ export class ShorterController {
     console.log(headers);
     const contentType = headers['content-type'] ?? '';
     const apikey = headers['shorten_api_key'] ?? '';
-    const originUrl = postDto.originUrl ?? '';
-    const endDatetime = postDto.endDatetime ?? '';
 
     // json type 여부 체크.
     const result: ResultDto = new ResultDto();
@@ -112,21 +110,24 @@ export class ShorterController {
     // 여기까지는 filter 로 이동해야 함.
 
     // target_url 체크
-    if (!originUrl) {
+    if (!postDto.originUrl) {
       result.isSuccess = false;
       result.resultCode = ResultCode.E120;
       result.resultMsg = ResultMsg.getResultMsg(ResultCode.E120);
       return of(result);
     }
 
-    // TODO : Custom class validator 구현 확인. 문자열 스트링을 Date 포맷으로 검증할 수 있는 지 확인.
     // end_date and period 체크
-    if (!endDatetime || !DateUtil.isValidDateTime(endDatetime)) {
+    if (!postDto.endDatetime || !DateUtil.isValidTimestamp(postDto.endDatetime)) {
       //** 최대 1년 이내처리 추가 고민
       result.isSuccess = false;
       result.resultCode = ResultCode.E130;
       result.resultMsg = ResultMsg.getResultMsg(ResultCode.E130);
       return of(result);
+    }
+
+    if (!postDto.beginDatetime) {
+      postDto.beginDatetime = DateUtil.getNowformatKOR('YYYYMMDDHHmmss');
     }
 
     const resultDto: ResultDto = new ResultDto();

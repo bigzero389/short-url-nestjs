@@ -1,10 +1,5 @@
-import { AccountService } from '../../account/account.service';
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { Account } from '../../account/account.entity';
 import { Like, Repository } from 'typeorm';
 import { LikeType, ObjUtil } from './objUtil';
-import { CreateAccountDto } from '../../account/account.dto';
 
 describe('ObjUtil', () => {
 

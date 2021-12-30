@@ -15,7 +15,6 @@ import { TypeOrmConfigService } from '../shared/config/typeorm.config.service';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     TypeOrmModule.forFeature([Shorter]),
     // CacheModule.register({ store: redisStore, host: 'localhost', port: 6379, db: 1, }),
-    // TODO : Redis Config Service 로 변경.
     CacheModule.registerAsync({
       // imports: [ConfigModule], // ConfigModule 을 global 로 설정했으므로 여기서 필요없다. 만일 global 로 안했으면 넣어줘야 함.
       inject: [ConfigService],

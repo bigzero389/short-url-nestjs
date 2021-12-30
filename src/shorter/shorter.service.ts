@@ -39,12 +39,11 @@ export class ShorterService {
         return new Shorter();
       });
 
-    // redis 처리.
-    // TODO : ttl 을 expire time 으로 연산해서 넣어야 한다.
+    // redis 저장.
     const cacheResult = await this.cacheManager.set(
       createShorterDto.shorter_key,
       createShorterDto,
-      { ttl: 600 },
+      { ttl: DateUtil.getIntervalSecond(createShorterDto.end_datetime, createShorterDto.begin_datetime) },
     ); // 10 min
 
     return createdData;
@@ -99,10 +98,10 @@ export class ShorterService {
     }
     if (isUseYN) {
       query.andWhere('shorter.begin_datetime <= :current_datetime', {
-        current_datetime: DateUtil.yyyyMMddHHmissKOR(),
+        current_datetime: DateUtil.getNowformatKOR('YYYYMMDDHHmmss'),
       });
       query.andWhere('shorter.end_datetime >= :current_datetime', {
-        current_datetime: DateUtil.yyyyMMddHHmissKOR(),
+        current_datetime: DateUtil.getNowformatKOR('YYYYMMDDHHmmss'),
       });
     }
 
@@ -161,7 +160,6 @@ export class ShorterService {
   }
 
   makeTestShorterKey(originUrl: string) {
-    // TODO : short url 생성. 7자리로 변환 필요
     const result = Hash({ origin_url: originUrl, time: new Date(), });
     return result;
   }
