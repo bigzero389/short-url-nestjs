@@ -5,6 +5,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Apikey } from './apikey.entity';
 import { CreateApikeyDto } from './apikey.dto';
 import { DeleteResult } from 'typeorm';
+import { AuthModule } from '../auth/auth.module';
 
 const mockApikeyRepository = () => ({
   save: jest.fn( () => new Promise((resolve) => { resolve(new CreateApikeyDto()); }), ),
@@ -32,6 +33,7 @@ describe('ApikeyController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [AuthModule],
       controllers: [ApikeyController],
       providers: [
         ApikeyService,

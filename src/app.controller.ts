@@ -1,23 +1,32 @@
-import { CACHE_MANAGER, Controller, Get, Inject } from '@nestjs/common';
+import { CACHE_MANAGER, Controller, Get, Inject, Logger, Param, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ConfigService } from '@nestjs/config';
+import { from, Observable } from 'rxjs';
+import { Account } from './account/account.entity';
+import { map } from 'rxjs/operators';
+import { ShorterService } from './shorter/shorter.service';
 
 @Controller()
 export class AppController {
+  private static readonly LOGGER = new Logger(AppController.name);
+
   constructor(
     private readonly appService: AppService,
     private readonly configService: ConfigService,
   ) {}
 
-  @Get()
-  get(): string {
-    return this.appService.get();
+  @Get('*')
+  get(@Req() req, @Res() res): Observable<any> {
+    const shorter = req.url.replace('/', '');
+    AppController.LOGGER.debug(JSON.stringify(shorter));
+    const shorterInfo = from(this.appService.getRedis(shorter));
+    return shorterInfo.pipe(
+      map((result) => {
+        AppController.LOGGER.debug(JSON.stringify(result));
+        return res.redirect(result.origin_url);
+      }),
+    );
   }
-
-  // @Get('hello')
-  // getHello(): string {
-  //   return 'Hello bigzero short url world';
-  // }
 
   @Get('health')
   getHealth(): string {

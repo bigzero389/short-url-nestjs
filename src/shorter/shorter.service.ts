@@ -139,6 +139,7 @@ export class ShorterService {
       let result = null;
       for (let i = 0; i < 10; i++) {
         result = await this.cacheManager.get(redisKey);
+        ShorterService.LOGGER.debug('Make Shorter Key : ' + result);
         if (result) {
           redisKey = this.getHashKey(originUrl);
         } else {

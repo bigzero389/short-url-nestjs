@@ -7,10 +7,12 @@ import { Shorter } from './shorter.entity';
 import * as redisStore from 'cache-manager-ioredis';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmConfigService } from '../shared/config/typeorm.config.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
     SharedModule,
+    AuthModule,
     // TypeOrmModule.forRoot(),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     TypeOrmModule.forFeature([Shorter]),

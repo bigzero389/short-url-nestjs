@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AccountService } from './account.service';
 import { map } from 'rxjs/operators';
 import { from, Observable } from 'rxjs';
@@ -9,8 +9,10 @@ import { LikeType, ObjUtil } from '../shared/util/objUtil';
 import { ResultCode } from '../shared/result-code';
 import { ResultMsg } from '../shared/result-msg';
 import { FindConditions, Like } from 'typeorm';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('account')
+@UseGuards(AuthGuard)
 export class AccountController {
   private static readonly LOGGER = new Logger(AccountController.name);
   constructor(readonly accountService: AccountService) {}

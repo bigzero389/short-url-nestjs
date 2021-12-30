@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { LikeType, ObjUtil } from '../shared/util/objUtil';
 import { from, Observable } from 'rxjs';
 import { ResultDto } from '../shared/result.dto';
@@ -9,8 +9,10 @@ import { CreateApikeyDto, PostApikeyDto, PutApikeyDto } from './apikey.dto';
 import { ApikeyService } from './apikey.service';
 import * as Hash from 'object-hash';
 import { Apikey } from './apikey.entity';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('apikey')
+@UseGuards(AuthGuard)
 export class ApikeyController {
   private static readonly LOGGER = new Logger(ApikeyController.name);
   constructor(readonly apikeyService: ApikeyService) {}

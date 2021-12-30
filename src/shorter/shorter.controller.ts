@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Headers, Req, Logger, Inject, CACHE_MANAGER, Query, } from '@nestjs/common';
+import { Body, Controller, Get, Post, Headers, Req, Logger, Inject, CACHE_MANAGER, Query, UseGuards } from '@nestjs/common';
 import { ShorterService } from './shorter.service';
 import { PutShorterDto, PostShorterDto } from './shorter.dto';
 import { catchError, from, Observable, of, throwError } from 'rxjs';
@@ -10,8 +10,10 @@ import { map } from 'rxjs/operators';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { Shorter } from './shorter.entity';
 import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('shorter')
+@UseGuards(AuthGuard)
 export class ShorterController {
   private static readonly LOGGER = new Logger(ShorterController.name);
   constructor(
@@ -86,28 +88,7 @@ export class ShorterController {
   @Post()
   create(@Headers() headers, @Body() postDto: PostShorterDto) {
     // 여기서 부터
-    console.log(headers);
-    const contentType = headers['content-type'] ?? '';
-    const apikey = headers['shorten_api_key'] ?? '';
-
-    // json type 여부 체크.
     const result: ResultDto = new ResultDto();
-    if (contentType != 'application/json') {
-      result.isSuccess = false;
-      result.resultCode = ResultCode.E100;
-      result.resultMsg = ResultMsg.getResultMsg(ResultCode.E100);
-      return of(result);
-    }
-
-    // api key 체크.
-    if (apikey && apikey != 'bigzeroKey') {
-      // ** apiKey 정상여부 체크
-      result.isSuccess = false;
-      result.resultCode = ResultCode.E110;
-      result.resultMsg = ResultMsg.getResultMsg(ResultCode.E110);
-      return of(result);
-    }
-    // 여기까지는 filter 로 이동해야 함.
 
     // target_url 체크
     if (!postDto.originUrl) {

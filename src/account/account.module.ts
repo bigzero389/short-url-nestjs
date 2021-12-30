@@ -7,6 +7,7 @@ import { SharedModule } from '../shared/shared.module';
 import { CustomNamingStrategy } from '../shared/config/custom-naming-strategy';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmConfigService } from '../shared/config/typeorm.config.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TypeOrmConfigService } from '../shared/config/typeorm.config.service';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     TypeOrmModule.forFeature([Account]),
     SharedModule,
+    AuthModule,
   ],
   controllers: [AccountController],
   providers: [AccountService],

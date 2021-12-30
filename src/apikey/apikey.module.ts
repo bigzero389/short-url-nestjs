@@ -6,6 +6,7 @@ import { ApikeyController } from './apikey.controller';
 import { ApikeyService } from './apikey.service';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmConfigService } from '../shared/config/typeorm.config.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { TypeOrmConfigService } from '../shared/config/typeorm.config.service';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     TypeOrmModule.forFeature([Apikey]),
     SharedModule,
+    AuthModule,
   ],
   controllers: [ApikeyController],
   providers: [ApikeyService],
