@@ -15,11 +15,13 @@ export class AppController {
     private readonly configService: ConfigService,
   ) {}
 
-  @Get('*')
-  get(@Req() req, @Res() res): Observable<any> {
+  @Get('s/*')
+  get(@Req() req, @Res() res, @Param() params): Observable<any> {
     const shorter = req.url.replace('/', '');
     AppController.LOGGER.debug(JSON.stringify(shorter));
-    const shorterInfo = from(this.appService.getRedis(shorter));
+    AppController.LOGGER.debug(JSON.stringify(params[0]));
+    const shorterInfo = from(this.appService.getRedis(params[0]));
+    // const shorterInfo = from(this.appService.getRedis(params.s));
     return shorterInfo.pipe(
       map((result) => {
         AppController.LOGGER.debug(JSON.stringify(result));
