@@ -1,7 +1,7 @@
 import { DefaultNamingStrategy, Table, NamingStrategyInterface } from "typeorm";
 // import crypto from "crypto";
 
-// TODO : 작업중.
+// TODO : PK constraint 와 FK constraint 등의 이름 지정시 Custom Naming Strategy 를 사용해야 된다고 함.
 export class CustomNamingStrategy extends DefaultNamingStrategy implements NamingStrategyInterface {
   foreignKeyName(
     tableOrName: Table | string,

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Headers, Req, Logger, Inject, CACHE_MANAGER, Query, UseGuards } from '@nestjs/common';
 import { ShorterService } from './shorter.service';
-import { PutShorterDto, PostShorterDto } from './shorter.dto';
+import { PostShorterDto } from './shorter.dto';
 import { catchError, from, Observable, of, throwError } from 'rxjs';
 import { DateUtil } from '../shared/util/dateUtil';
 import { ResultDto } from '../shared/result.dto';
@@ -11,7 +11,10 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 import { Shorter } from './shorter.entity';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '../auth/auth.guard';
+import { ApiBody, ApiHeader, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { PostApikeyDto } from '../apikey/apikey.dto';
 
+@ApiTags('Short Url 관리')
 @Controller('shorter')
 @UseGuards(AuthGuard)
 export class ShorterController {
@@ -21,71 +24,10 @@ export class ShorterController {
     private readonly configService: ConfigService,
   ) {}
 
-  @Get('/cache')
-  async getCacheTime(@Query('id') id: string): Promise<string> {
-    const savedTime = await this.shorterService.getCacheTime(id);
-    if (savedTime) {
-      return savedTime;
-    }
-  }
-
-  @Get()
-  get(@Req() req): Observable<Shorter[]> {
-    const getQueryParam = req.query;
-    ShorterController.LOGGER.debug(
-      'get param: ' + JSON.stringify(getQueryParam),
-    );
-
-    const shorterList = from(this.shorterService.get(getQueryParam));
-    return shorterList.pipe(
-      map((result) => {
-        ShorterController.LOGGER.debug('get: ' + JSON.stringify(result));
-        return result;
-      }),
-    );
-  }
-
-  @Get('origin')
-  getOriginUrl(@Req() req): Observable<Shorter> {
-    const getQueryParam = req.query;
-    if (!getQueryParam.apikey || !getQueryParam.shortUrl) {
-      return of(new Shorter());
-    }
-    const shorterList = from(this.shorterService.get(getQueryParam, true));
-    return shorterList.pipe(
-      map((result) => {
-        return result[0];
-      }),
-    );
-  }
-
-  @Get('short')
-  getShortUrl(@Req() req): Observable<Shorter> {
-    const getQueryParam = req.query;
-    if (!getQueryParam.apikey || !getQueryParam.originUrl) {
-      return of(new Shorter());
-    }
-    const shorterList = from(this.shorterService.get(getQueryParam, true));
-    return shorterList.pipe(
-      map((result) => {
-        return result[0];
-      }),
-    );
-  }
-
-  deleteOne(shortUrlId: string): Observable<DeleteResult> {
-    return new Observable<DeleteResult>((result) => {
-      return result;
-    });
-  }
-
-  update(putShorterDto: PutShorterDto): Observable<UpdateResult> {
-    return new Observable<UpdateResult>((result) => {
-      return result;
-    });
-  }
-
   @Post()
+  @ApiOperation({ summary: 'short 정보 생성', description: 'short 정보 생성' })
+  @ApiHeader( { name: 'short_auth_key', required: true, description: 'system auth key', schema: { default : 'bigzero-auth-key-01' } }, )
+  @ApiBody({ type: PostShorterDto })
   create(@Headers() headers, @Body() postDto: PostShorterDto) {
     // 여기서 부터
     const result: ResultDto = new ResultDto();
@@ -119,8 +61,8 @@ export class ShorterController {
     return value.pipe(
       // redisKey를 이용하여 postDto 의 값을 채운다. shorterKey, shortUrl
       map((redisKey) => {
-        postDto.shorterKey = redisKey;
-        postDto.shortUrl = config_url + '/' + postDto.shorterKey;
+        postDto.shortKey = redisKey;
+        postDto.shortUrl = config_url + '/' + postDto.shortKey;
         return postDto;
       }),
       // 완성된 postDto를 이용하여 DB와 redis 에 값을 넣는다.
@@ -136,6 +78,57 @@ export class ShorterController {
             return { shorter, ...resultDto };
           }
         });
+      }),
+    );
+  }
+
+  @Get('/cache')
+  @ApiOperation({ summary: '서버 시간 조회', description: 'redis 에서 제공하는 시간정보를 조회한다.' })
+  @ApiHeader( { name: 'short_auth_key', required: true, description: 'system auth key', schema: { default : 'bigzero-auth-key-01' } }, )
+  @ApiQuery( { name: 'id', description: 'redis 시간정보를 요청할 key id', example: 'time', required: true}, )
+  async getCacheTime(@Query('id') id: string): Promise<string> {
+    const savedTime = await this.shorterService.getCacheTime(id);
+    if (savedTime) {
+      return savedTime;
+    }
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'short list 정보조회', description: 'query 정보에 따른 short 정보 리스트 조회', })
+  @ApiHeader( { name: 'short_auth_key', required: true, description: 'system auth key', schema: { default : 'bigzero-auth-key-01' } }, )
+  @ApiQuery( { name: 'apikey', description: 'apikey , = 검색', example: '', required: false }, )
+  @ApiQuery( { name: 'originUrl', description: 'origin url, = 검색', example: '', required: false }, )
+  @ApiQuery( { name: 'apikey', description: 'apikey , = 검색', example: '', required: false }, )
+  @ApiQuery( { name: 'shortUrl', description: 'short url, = 검색', example: '', required: false }, )
+  get(@Req() req): Observable<Shorter[]> {
+    const getQueryParam = req.query;
+    ShorterController.LOGGER.debug(
+      'get param: ' + JSON.stringify(getQueryParam),
+    );
+
+    const shorterList = from(this.shorterService.get(getQueryParam));
+    return shorterList.pipe(
+      map((result) => {
+        ShorterController.LOGGER.debug('get: ' + JSON.stringify(result));
+        return result;
+      }),
+    );
+  }
+
+  @Get('short')
+  @ApiOperation({ summary: 'short url 1건 정보조회', description: 'apikey 와 origin url 정보에 의한 short url 조회', })
+  @ApiHeader( { name: 'short_auth_key', required: true, description: 'system auth key', schema: { default : 'bigzero-auth-key-01' } }, )
+  @ApiQuery( { name: 'apikey', description: 'apikey , = 검색', example: '', required: true }, )
+  @ApiQuery( { name: 'originUrl', description: 'origin url, = 검색', example: 'http://test.test.net', required: true }, )
+  getShortUrl(@Req() req): Observable<Shorter> {
+    const getQueryParam = req.query;
+    if (!getQueryParam.apikey || !getQueryParam.originUrl) {
+      return of(new Shorter());
+    }
+    const shorterList = from(this.shorterService.get(getQueryParam, true));
+    return shorterList.pipe(
+      map((result) => {
+        return result[0];
       }),
     );
   }

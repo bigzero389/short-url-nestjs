@@ -83,7 +83,7 @@ export class AccountService {
 
   async update(putDto: PutAccountDto): Promise<UpdateResult> {
     // where 절 동적 생성 부분.
-    const whereOptions = putDto.updateWhereOptions;
+    const whereOptions = putDto.updateConditions;
     // update service where 절 기준 정의
     const conditionMap = new Map<string, LikeType>([
       ['accountId', LikeType.NOT],
@@ -93,7 +93,7 @@ export class AccountService {
     ]);
     const conditions = ObjUtil.condition(conditionMap, whereOptions);
     AccountService.LOGGER.debug('conditions: ' + JSON.stringify(conditions));
-    delete putDto['updateWhereOptions']; // putDto 에서 whereOption 제거.
+    delete putDto['updateConditions']; // putDto 에서 whereOption 제거.
     // 여기까지 where 절 동적 생성 부분
 
     const updateAccountDto = {};

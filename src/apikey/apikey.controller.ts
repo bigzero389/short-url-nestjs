@@ -10,7 +10,10 @@ import { ApikeyService } from './apikey.service';
 import * as Hash from 'object-hash';
 import { Apikey } from './apikey.entity';
 import { AuthGuard } from '../auth/auth.guard';
+import { ApiBody, ApiHeader, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { PostAccountDto, PutAccountDto } from '../account/account.dto';
 
+@ApiTags('ApiKey 관리')
 @Controller('apikey')
 @UseGuards(AuthGuard)
 export class ApikeyController {
@@ -18,6 +21,9 @@ export class ApikeyController {
   constructor(readonly apikeyService: ApikeyService) {}
 
   @Post()
+  @ApiOperation({ summary: 'apikey 생성', description: 'apikey 정보 생성' })
+  @ApiHeader( { name: 'short_auth_key', required: true, description: 'system auth key', schema: { default : 'bigzero-auth-key-01' } }, )
+  @ApiBody({ type: PostApikeyDto })
   create(@Body() postDto: PostApikeyDto) {
     ApikeyController.LOGGER.debug('create postApikeyDto: ' + JSON.stringify(postDto));
     // apikey를 accountId 와 date seed로 random 생성.
@@ -41,6 +47,9 @@ export class ApikeyController {
   }
 
   @Get(':apikey')
+  @ApiOperation({ summary: 'apikey 정보조회', description: 'apikey 에 따른 api 1건 정보조회' })
+  @ApiHeader( { name: 'short_auth_key', required: true, description: 'system auth key', schema: { default : 'bigzero-auth-key-01' } }, )
+  @ApiParam({ name: 'apikey', description: 'apikey', example: '' })
   getOne(@Param() params): Observable<Apikey> {
     const apikeyList = from(this.apikeyService.getOne(params.apikey));
     return apikeyList.pipe(
@@ -52,6 +61,13 @@ export class ApikeyController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'apikey list 정보조회', description: 'query 정보에 따른 api 정보 리스트 조회', })
+  @ApiHeader( { name: 'short_auth_key', required: true, description: 'system auth key', schema: { default : 'bigzero-auth-key-01' } }, )
+  @ApiQuery( { name: 'apikey', description: 'apikey , like 검색', example: '', required: false }, )
+  @ApiQuery( { name: 'accountId', description: 'account id, = 검색', example: 'shortUser01', required: false }, )
+  @ApiQuery( { name: 'email', description: 'email, 앞에서 부터 like 검색', example: 'tes', required: false }, )
+  @ApiQuery( { name: 'accountName', description: 'account 이름, like 검색', example: '길동', required: false }, )
+  @ApiQuery( { name: 'tel', description: '전화번호, like 검색', example: '010', required: false }, )
   get(@Req() req): Observable<Apikey[]> {
     const getQueryParam = req.query;
     ApikeyController.LOGGER.debug('get param: ' + JSON.stringify(getQueryParam));
@@ -66,6 +82,9 @@ export class ApikeyController {
   }
 
   @Delete(':apikey')
+  @ApiOperation({ summary: 'api 정보 삭제', description: 'apikey 정보에 의한 1건 삭제', })
+  @ApiHeader( { name: 'short_auth_key', required: true, description: 'system auth key', schema: { default : 'bigzero-auth-key-01' } }, )
+  @ApiParam( { name: 'apikey', description: 'apikey, = 검색', example: '', required: true }, )
   deleteOne(@Param() params): Observable<ResultDto> {
     const resultDto = new ResultDto();
     const result = from(this.apikeyService.deleteOne(params.apikey));
@@ -88,6 +107,9 @@ export class ApikeyController {
   }
 
   @Put()
+  @ApiOperation({ summary: 'api 수정', description: 'api 정보 수정' })
+  @ApiHeader( { name: 'short_auth_key', required: true, description: 'system auth key', schema: { default : 'bigzero-auth-key-01' } }, )
+  @ApiBody({ type: PutApikeyDto })
   update(@Body() putApikeyDto: PutApikeyDto): Observable<ResultDto> {
     ApikeyController.LOGGER.debug( 'update putApikeyDto: ' + JSON.stringify(putApikeyDto), );
 

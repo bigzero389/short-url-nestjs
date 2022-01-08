@@ -41,10 +41,10 @@ export class ShorterService {
 
     // redis 저장.
     const cacheResult = await this.cacheManager.set(
-      createShorterDto.shorter_key,
+      createShorterDto.short_key,
       createShorterDto,
       { ttl: DateUtil.getIntervalSecond(createShorterDto.end_datetime, createShorterDto.begin_datetime) },
-    ); // 10 min
+    );
 
     return createdData;
   }

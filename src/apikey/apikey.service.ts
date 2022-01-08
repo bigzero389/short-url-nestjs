@@ -47,7 +47,7 @@ export class ApikeyService {
       ]);
     query.where('1 = 1');
     if (getQueryParams.accountId) {
-      query.andWhere('account.account_id = :account_id', { account_id: `%${getQueryParams.accountId}%` })
+      query.andWhere('account.account_id like :account_id', { account_id: `%${getQueryParams.accountId}%` })
     }
     if (getQueryParams.accountName) {
       query.andWhere('account.account_name like :account_name', { account_name: `%${getQueryParams.accountName}%` })
@@ -97,7 +97,7 @@ export class ApikeyService {
 
   async update(putDto: PutApikeyDto): Promise<UpdateResult> {
     // 쿼리 생성
-    const whereOptions = putDto.updateWhereOptions;
+    const whereOptions = putDto.updateConditions;
     // update where 절이 없는 경우 쿼리 자체를 수행시키지 않는다.
     if (!whereOptions) {
       return new UpdateResult();
