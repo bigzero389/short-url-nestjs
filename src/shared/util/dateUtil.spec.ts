@@ -29,8 +29,10 @@ describe('DateUtil', () => {
       const baseDate = new Date();
       // baseDate.setHours(baseDate.getHours()); // KOR
       const year = baseDate.getFullYear();
-      const month = baseDate.getMonth() + 1;
-      const day = baseDate.getDate();
+      const monthNumber = baseDate.getMonth() + 1;
+      const month = String(monthNumber).length == 1 ? '0' + (monthNumber) : monthNumber;
+      const dayNumber = baseDate.getDate();
+      const day = String(dayNumber).length == 1 ? '0' + (dayNumber) : dayNumber;
       const hour = baseDate.getHours();
       const base = `${year}${month}${day} ${hour}`;
 

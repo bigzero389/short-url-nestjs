@@ -130,8 +130,8 @@ describe('ApikeyService', () => {
       const putDto = JSON.stringify({
         accountId: 'updatedAccountId',
         apikey: 'updatedApikey',
-        updateWhereOptions: {
-          accountId: 'bigzero1',
+        updateConditions: {
+          accountId: 'bigzero',
         },
       });
       const result = await service.update(JSON.parse(putDto));

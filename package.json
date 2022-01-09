@@ -36,6 +36,7 @@
     "moment-timezone": "^0.5.34",
     "object-hash": "^2.2.0",
     "pg": "^8.7.1",
+    "redis": "^4.0.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.4.0",

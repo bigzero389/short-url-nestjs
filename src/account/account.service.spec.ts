@@ -131,7 +131,7 @@ describe('AccountService', () => {
       mockRepository.update.mockResolvedValue(updateResult);
       const testData = JSON.stringify({
         accountId: 'updatedAccountId',
-        updateWhereOptions: {
+        updateConditions: {
           accountName: 'dyheo1',
         },
       });
@@ -144,7 +144,7 @@ describe('AccountService', () => {
       mockRepository.update.mockResolvedValue(updateResult);
       const testData = JSON.stringify({
         accountId: 'accountId',
-        updateWhereOptions: {
+        updateConditions: {
           accountName: 'isNotExist',
         },
       });

@@ -41,9 +41,11 @@
 ## Runtime settings
 ### git clone
 * git clone https://github.com/largezero/ShortURL.git
+### nestjs cli install
+* npm i -g @nestjs/cli yarn
 ### yarn installation
 * yarn global add @nestjs/cli
-* yarn add @nestjs/config @nestjs/typeorm pg object-hash cache-manager cache-manager-ioredis moment moment-timezone
+* yarn add @nestjs/config @nestjs/typeorm pg object-hash @nestjs-modules/ioredis ioredis redis cache-manager cache-manager-ioredis moment moment-timezone
 * yarn install
 * yarn start // default port 3000
 
