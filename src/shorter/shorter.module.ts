@@ -24,7 +24,7 @@ import { AuthModule } from '../auth/auth.module';
         store: redisStore,
         host: config.get<string>('REDIS_HOST'),
         port: config.get<number>('REDIS_PORT'),
-        db: config.get<number>('REDIS_DB'),
+        db: config.get<number>('REDIS_SHORT_DB'),
       }),
     }),
   ],

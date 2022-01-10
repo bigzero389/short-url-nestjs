@@ -12,7 +12,7 @@ export class AppService {
 
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache, // Cache 는 cache-manager 로 부터 import 해야 한다.
-    private configService: ConfigService, // Cache 는 cache-manager 로 부터 import 해야 한다.
+    private configService: ConfigService, 
     private redisService: RedisService,
   ) {}
 
@@ -30,7 +30,7 @@ export class AppService {
     const redis = this.redisService.getClient(redisCounterDb);
     await redis.connect();
     const shortUrlCnt = await redis.incr(redisKey);
-    AppService.LOGGER.debug('!!!!!!!!!!!!!! Short Url Counter :::' + shortUrlCnt);
+    AppService.LOGGER.debug('Short Url Counter :::' + shortUrlCnt);
 
     // 단순한 Redis get/set 작업은 cacheManager 를 활용했음.
     return this.cacheManager.get(redisKey);

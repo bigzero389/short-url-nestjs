@@ -32,5 +32,8 @@ describe('AppController', () => {
     it('should be "ok"', () => {
       expect(appController.getHealth()).toBe('ok');
     });
+    it('should be "Hello Bigzero Short URL!"', () => {
+      expect(appController.get()).toBe('Hello Bigzero Short URL!');
+    });
   });
 });

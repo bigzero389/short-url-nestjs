@@ -17,8 +17,8 @@ import * as redisStore from 'cache-manager-ioredis';
     AccountModule,
     ApikeyModule,
     ShorterModule,
-    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.local' }),
-    AuthModule, // .env 라는 단어가 들어가야 한다.
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env.local' }),  // .env 라는 단어가 들어가야 한다.
+    AuthModule,     
     CacheModule.registerAsync({
       // imports: [ConfigModule], // ConfigModule 을 global 로 설정했으므로 여기서 필요없다. 만일 global 로 안했으면 넣어줘야 함.
       inject: [ConfigService],
@@ -26,7 +26,7 @@ import * as redisStore from 'cache-manager-ioredis';
         store: redisStore,
         host: config.get<string>('REDIS_HOST'),
         port: config.get<number>('REDIS_PORT'),
-        db: config.get<number>('REDIS_DB'),
+        db: config.get<number>('REDIS_SHORT_DB'),
       }),
     }),
   ],

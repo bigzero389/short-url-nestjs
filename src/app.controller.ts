@@ -22,7 +22,7 @@ export class AppController {
   @ApiOperation({ summary: 'short url 호출', description: 'short url 을 호출하면 origin url 로 redirect 한다.' })
   @ApiParam({ name: 'short', example: '9f3dded' })
   @ApiCreatedResponse({ description: 'redirect to origin url', status: 201 })
-  get(@Req() req, @Res() res, @Param() params): Observable<Shorter> {
+  getUrl(@Req() req, @Res() res, @Param() params): Observable<Shorter> {
     const shorter = req.url.replace('/', '');
     AppController.LOGGER.debug(JSON.stringify(shorter));
     AppController.LOGGER.debug(JSON.stringify(params.short));
@@ -34,6 +34,12 @@ export class AppController {
         return res.redirect(result.origin_url);
       }),
     );
+  }
+
+  @Get('/hello')
+  @ApiOperation({ summary: 'application hello', description: 'application layer 가 정상인지 체크한다.', })
+  get(): string {
+    return this.appService.get();
   }
 
   @Get('/health')
