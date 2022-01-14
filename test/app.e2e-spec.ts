@@ -15,6 +15,7 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
+  // TODO : Hello World! 체크 확인
   it('/ (GET)', () => {
     return request(app.getHttpServer())
       .get('/')
