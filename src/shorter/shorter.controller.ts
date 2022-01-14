@@ -54,7 +54,11 @@ export class ShorterController {
     }
 
     const resultDto: ResultDto = new ResultDto();
-    const config_url = `${this.configService.get<string>('HTTP_SCHEMA')}://${this.configService.get<string>('SHORTER_URL')}:${this.configService.get<string>('SHORTER_PORT')}`;
+    const SHORTER_SCHEMA = this.configService.get<string>('SHORTER_SCHEMA');
+    const SHORTER_URL = this.configService.get<string>('SHORTER_URL');
+    const SHORTER_PORT = this.configService.get<string>('SHORTER_PORT');
+    const SHORTER_DOCBASE = this.configService.get<string>('SHORTER_DOCBASE');
+    const config_url = `${SHORTER_SCHEMA}://${SHORTER_URL}:${SHORTER_PORT}/${SHORTER_DOCBASE}`;
     /* postDto.shorterKey = this.shorterService.makeTestShorterKey(postDto.originUrl); */
     // 중복되지 않은 redisKey 를 가져온다.
     const value = from( this.shorterService.makeShorterKey(postDto.originUrl), );

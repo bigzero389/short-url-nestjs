@@ -134,10 +134,13 @@ export class ShorterService {
 
   // redis 에 key가 이미 존재하는지 체크해서 있으면 재시도, 없으면 redisKey 리턴, 단, 10번해서도 계속 중복존재하면 null 리턴.
   async makeShorterKey(originUrl: string): Promise<string> {
+    const firstRedisKey = this.getHashKey(originUrl);
+
     // redis 반복체크 함수정의.
     const dupCheck = async (redisKey) => {
       let result = null;
       for (let i = 0; i < 10; i++) {
+        // if(i == 0) redisKey = '9f3dded';  // 중복체크 테스트용
         result = await this.cacheManager.get(redisKey);
         ShorterService.LOGGER.debug('Make Shorter Key : ' + result);
         if (result) {
@@ -149,8 +152,7 @@ export class ShorterService {
       }
       return result ? null : redisKey;
     };
-
-    const firstRedisKey = this.getHashKey(originUrl);
+    
     // 반복체크 함수의 결과값 리턴.
     return await dupCheck(firstRedisKey).then((result) => result);
   }
