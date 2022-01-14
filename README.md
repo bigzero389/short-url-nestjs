@@ -31,6 +31,8 @@
 * 1개의 apikey 는 여러개의 short url 을 가진다. (1대다 관계)
 * 모든 정보는 DB 에서 관리한다.
 * short url 에 대한 처리는 속도를 위해서 redis 를 cache 로 사용한다.
+### ERD
+![short-url_erd](https://user-images.githubusercontent.com/16658223/149438383-33023bb1-3095-4fef-9f99-b73092d111cb.png)
 
 ### To-Do
 * (완료) 기초적인 CRUD 가 아닌 실제 현업에서 사용 가능한 수준의 Data Handling 예제
