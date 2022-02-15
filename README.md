@@ -18,18 +18,39 @@
 ### nestjs cli install
 * npm i -g @nestjs/cli
 ### yarn installation
-* npm i -g yarn
-* yarn add @nestjs/config @nestjs/typeorm pg object-hash @nestjs-modules/ioredis ioredis redis cache-manager cache-manager-ioredis moment moment-timezone
-* yarn install
-* yarn start // default port 3000
+```
+npm i -g yarn
+yarn add @nestjs/config @nestjs/typeorm pg object-hash @nestjs-modules/ioredis ioredis redis cache-manager cache-manager-ioredis moment moment-timezone
+yarn install
+yarn start // default port 3000
+```
 
 ### short-url-nestjs app dockerizing
-* touch Dockerfile and make dockerizing code
-* docker build . -t short-url-nestjs
-* docker run -p 3000:3000 short-url-nestjs
+```
+touch Dockerfile and make dockerizing code
+docker build . -t short-url-nestjs
+docker run -p 3000:3000 short-url-nestjs
+```
 
-### Running with docker-compose
-
+### all docker run in same network
+* install ping command in docker 
+```
+docker container exec -it redis-svr /bin/bash
+apt-get update
+apt-get install inetutils-ping
+```
+* check network by ping 
+```
+docker inspect -f "{{ .NetworkSettings.IPAddress }}" postgres
+docker exec -t redis-svr ping 172.x.x.x
+```
+* make network and running docker in same network
+```
+docker network create short-url-network
+docker run --name redis-svr -d --network short-url-network -p 6379:6379 -v redis_data:/data redis redis-server --appendonly yes
+docker run -d --network short-url-network -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=nest1234 -v pgdata:/var/lib/postgresql/data postgres
+docker run --network short-url-network -p 3000:3000 short-url-nestjs
+```
 
 ## System overview
 ### Title : Shorten URL API Service Application (NestJS)
@@ -49,7 +70,7 @@
 * (완료) 라이브러리 최소화 및 검증된 라이브러리 사용을 통한 지속적 유지보수성
 * (완료) 각각의 Layer 별 일관된 에러처리 및 보안을 위한 최소한의 메시지처리
 * (완료) 타 시스템과의 연계를 고려한 인터페이스 표준화 및 Validation 처리
-* (진행전) OS, Docker 등 제반 인프라 환경에 종속적이지 않은 Application 환경 독립성 제공
+* (완료) OS, Docker 등 제반 인프라 환경에 종속적이지 않은 Application 환경 독립성 제공
 
 
 ### NestJS Module
