@@ -7,10 +7,10 @@
 ### middleware : docker
 * brew cask install docker
 ### database : postgres
-* docker run -d -p 15432:5432 --name postgres -e POSTGRES_PASSWORD=nest1234 -v pgdata:/var/lib/postgresql/data postgres
+* docker run -d -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=nest1234 -v pgdata:/var/lib/postgresql/data postgres
 ### cache : redis 
 * docker volume create --name redis_data
-* docker run --name redis-svr -d -p 16379:6379 -v redis_data:/data redis redis-server --appendonly yes
+* docker run --name redis-svr -d -p 6379:6379 -v redis_data:/data redis redis-server --appendonly yes
 
 ## Runtime settings
 ### git clone
@@ -22,6 +22,14 @@
 * yarn add @nestjs/config @nestjs/typeorm pg object-hash @nestjs-modules/ioredis ioredis redis cache-manager cache-manager-ioredis moment moment-timezone
 * yarn install
 * yarn start // default port 3000
+
+### short-url-nestjs app dockerizing
+* touch Dockerfile and make dockerizing code
+* docker build . -t short-url-nestjs
+* docker run -p 3000:3000 short-url-nestjs
+
+### Running with docker-compose
+
 
 ## System overview
 ### Title : Shorten URL API Service Application (NestJS)
