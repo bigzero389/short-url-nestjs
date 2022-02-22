@@ -7,7 +7,7 @@
 ### middleware : docker
 * brew cask install docker
 ### database : postgres
-* docker run -d -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=nest1234 -v pgdata:/var/lib/postgresql/data postgres
+* docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=nest1234 -v pgdata:/var/lib/postgresql/data -d postgres
 ### cache : redis 
 * docker volume create --name redis_data
 * docker run --name redis-svr -d -p 6379:6379 -v redis_data:/data redis redis-server --appendonly yes
